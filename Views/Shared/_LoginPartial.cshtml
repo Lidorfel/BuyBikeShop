@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using BuyBikeShop.Data;
+@inject UserManager<Customer> userManager
+<ul class="navbar-nav">
+    @if (User.Identity.IsAuthenticated)
+    {
+        
+        // Retrieve the current user
+        var currentUser = await userManager.GetUserAsync(User);
+        string Name = string.Empty;
+        
+        if (currentUser != null)
+        {
+            Name = currentUser.FName + " " + currentUser.LName;
+        }
+    
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-decoration-none text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @Name
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                    <a class="dropdown-item" asp-action="Logout" asp-controller="Account">
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+@*         <li class="nav-item">
+            <button type="button" asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-light me-2 text-end">Login</button>
+
+        </li>
+        <li class="nav-item">
+            <button type="button" asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-light">Sign-up</button>
+            
+        </li> *@
+        <div class="text-end">
+            <a type="button" asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-light me-2">Login</a>
+            <a type="button" asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-light">Sign-up</a>
+        </div>
+
+    }
+</ul>
