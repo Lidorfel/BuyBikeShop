@@ -1,0 +1,134 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model IEnumerable<BuyBikeShop.Models.Product>
+
+@{
+    var firstProduct = Model.FirstOrDefault();
+}
+
+
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Portfolio Item Heading -->
+    <h1 class="my-4">
+        @firstProduct.Class_Name-@firstProduct.Sub_Class
+    </h1>
+
+    <!-- Portfolio Item Row -->
+    <div class="row">
+
+        <div class="col-md-8">
+            @if (firstProduct.Class_Name == "Bike")
+            {
+                <img class="img-fluid" src="@firstProduct.Photo
+                " style=" height: 440px; object-fit: cover;" alt="">
+            }
+            else
+            {
+                <img class="img-fluid" src="@firstProduct.Photo
+                    " style="margin-left:80px; height: 440px; object-fit: cover;" alt="">
+            }
+        </div>
+
+        <div class="col-md-4">
+            <h1 class="my-3">@firstProduct.Title</h1>
+            <p class="h6 text-secondary " style="font-size:large" >@firstProduct.Description</p>
+            
+            <div class="mt-auto">
+                
+                @if (firstProduct.Sale_Perc > 0)
+                {
+                    <p class="mb-1">
+                        <h4 class="my-3">
+                            Price:
+                            <s class="text-danger">@firstProduct.Price.ToString("N0")$</s> <span class="text-danger">-@firstProduct.Sale_Perc% Sale</span>
+                        </h4>
+                    </p>
+                    <h4 class="my-3"><p class="text-success mb-2"><span class="text-black">New Price: </span>@((firstProduct.Price - (firstProduct.Price * firstProduct.Sale_Perc / 100.0)).ToString("N0"))$</p>
+                        </h4>
+                }
+                else
+                {
+                    <p class="mb-6">
+                         <h4 class="my-3">
+                            Price: @firstProduct.Price.ToString("N0")$</h4></p>
+                }
+            </div>
+
+            
+
+            <div class="d-flex justify-content-between align-items-center mb-2 ">
+                <div class="text-danger fw-bold">
+                    Age Restriction:<span class="text-black">@firstProduct.Age_Limit+</span>
+                </div>
+                <div class="text-info fw-bold">Quantity: <span class="text-black">@firstProduct.Quantity</span></div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-2 ">
+                <small class="text-muted">Release Date: @firstProduct.ReleaseDate.ToString("dd/MM/yyyy")</small>
+                <small class="text-muted d-flex align-items-center">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="@(i <= firstProduct.Rating ? "bi bi-star-fill" : "bi bi-star")" style="color: #ffc107;"> </i>
+                    }
+                    @firstProduct.Rating / 5
+                </small>
+            </div>
+
+            <div style="margin-top:20px">
+                <button type="button" class="btn btn-outline-success" style="margin-right:12px">Buy Now</button>
+                <button type="button" class="btn btn-outline-info">Add To Cart <i class="bi bi-cart"></i></button>
+
+            </div>
+
+            
+
+            
+        </div>
+
+    </div>
+    <!-- /.row -->
+    <!-- Related Projects Row -->
+    <h3 class="my-4">Related Projects</h3>
+
+    <div id="relatedProjectsCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Repeat the structure above for more slides with 4 images each -->
+        </div>
+        <a class="carousel-control-prev" href="#relatedProjectsCarousel" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#relatedProjectsCarousel" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </a>
+    </div>
+
+
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->

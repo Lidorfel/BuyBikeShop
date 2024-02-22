@@ -1,5 +1,7 @@
+using BuyBikeShop.Data;
 using BuyBikeShop.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace BuyBikeShop.Controllers
@@ -7,15 +9,18 @@ namespace BuyBikeShop.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly BuyBikeShopContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, BuyBikeShopContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var ProductContext = await _context.Products.ToListAsync();
+            return View(ProductContext);
         }
 
         public IActionResult Privacy()
