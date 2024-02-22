@@ -20,6 +20,12 @@
                                     <div class="mt-auto">
                                         @if (product.Sale_Perc > 0)
                                         {
+                                            <div class="position-absolute top-0 start-0">
+                                                <span class="badge bg-danger">Sale</span>
+                                            </div>
+                                        }
+                                        @if (product.Sale_Perc > 0)
+                                        {
                                             <p class="mb-1">
                                                 <s>@product.Price.ToString("N0")$</s> <span class="text-danger">-@product.Sale_Perc%</span>
                                             </p>
