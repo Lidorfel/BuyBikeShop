@@ -10,6 +10,7 @@
     var firstProduct = Model.FirstOrDefault();
 }
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.0.0-beta2/font/bootstrap-icons.css" rel="stylesheet">
 
 
 <!-- Page Content -->
@@ -67,7 +68,7 @@
                 <div class="text-danger fw-bold">
                     Age Restriction:<span class="text-black">@firstProduct.Age_Limit+</span>
                 </div>
-                <div class="text-info fw-bold">Quantity: <span class="text-black">@firstProduct.Quantity</span></div>
+                <div class="text-info fw-bold">In-Stock: <span class="text-black">@firstProduct.Quantity</span></div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-2 ">
@@ -93,39 +94,71 @@
         </div>
 
     </div>
-    <!-- /.row -->
-    <!-- Related Projects Row -->
-    <h3 class="my-4">Related Projects</h3>
+
+    <h3 class="my-4">Related Products</h3>
 
     <div id="relatedProjectsCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="row">
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
+            @{
+                int counter = 0; // Initialize a counter
+                bool isActive = true; // Flag to mark the first item as active
+                int totalItems = Model.Count();
+            }
+            @for (int i = 0; i < totalItems; i += 3)
+            {
+                <div class="carousel-item @(isActive ? "active" : "")">
+                    <div class="row" style="margin-left:120px">
+                        @foreach (var product in Model.Skip(i).Take(3))
+                        {
+                            
+                            <div class="col-md-4 col-sm-6 mb-4">
+                                <a asp-controller="Product" asp-action="" asp-route-id="@product.Id"><img class="img-fluid" style="height:200px" src="@product.Photo" alt="@product.Title"></a>
+                                
+                                <small style="display: block;">@product.Title</small>
+
+                                @* <small class="text-success" style="display: block;">@product.Price.ToString("N0")$</small> *@
+                                @if (product.Sale_Perc > 0)
+                                {
+                                    <p class="mb-1">
+                                        <s>@product.Price.ToString("N0")$</s> <span class="text-danger">-@product.Sale_Perc% Sale</span>
+                                    </p>
+                                    <p class="text-success mb-2">@((product.Price - (product.Price * product.Sale_Perc / 100.0)).ToString("N0"))$</p>
+                                }
+                                else
+                                {
+                                    <p class="mb-6">@product.Price.ToString("N0")$</p>
+                                }
+                            </div>
+                        }
+                        @if (i + 3 >= totalItems) // Check if it's the last set
+                        {
+                            int remainingItems = 3 - (totalItems % 3);
+                            remainingItems = remainingItems == 3 ? 0 : remainingItems; 
+                            @for (int j = 0; j < remainingItems; j++)
+                            {
+                                <div class="col-md-4 col-sm-6 mb-4">
+                                    <div class="coming-soon-placeholder" style=" padding-top:100px;">
+                                        <b>Coming Soon <span class="bi bi-hourglass-split" style="font-size:x-large"></span></b>
+                                    </div>
+                                </div>
+                            }
+                        }
                     </div>
                 </div>
-            </div>
-            <!-- Repeat the structure above for more slides with 4 images each -->
+                isActive = false; // Only the first item should be marked as active
+            }
         </div>
         <a class="carousel-control-prev" href="#relatedProjectsCarousel" role="button" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="bi bi-chevron-left text-dark" style="font-size: 2rem;"></span>
             <span class="visually-hidden">Previous</span>
         </a>
         <a class="carousel-control-next" href="#relatedProjectsCarousel" role="button" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="bi bi-chevron-right text-dark" style="font-size: 2rem;"></span>
             <span class="visually-hidden">Next</span>
         </a>
     </div>
+
+
 
 
     <!-- /.row -->
