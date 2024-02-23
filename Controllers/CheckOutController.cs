@@ -12,5 +12,12 @@ namespace BuyBikeShop.Controllers
            
             return View("Payment",quantity);
         }
+
+        public IActionResult Cart()
+        {
+            
+
+            return View("Cart");
+        }
     }
 }
