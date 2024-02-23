@@ -5,10 +5,72 @@
 
 @model IEnumerable<BuyBikeShop.Models.Product>
 
-
 <div class="text-center">
     <div class="album py-5 bg-body-tertiary gap-5">
         <div class="container p-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div style="height: 450px; padding-bottom: 140px;">
+                        <video autoplay muted loop id="video-background" poster="placeholder.jpg" style="width: 100%;">
+                            <source src="~/assets/XLITE - The fastest race bike we have ever developed_ Tech Details.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Carousel Example</title>
+                        <!-- Bootstrap CSS -->
+                        <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+                        <!-- Bootstrap Bundle JS (includes Popper) -->
+                        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+                    </head>
+                    <body>
+                        <div id="relatedProjectsCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <!-- First slide -->
+                                <div class="carousel-item active">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <a href="#"><img class="img-fluid" src="https://via.placeholder.com/1200x300" alt=""></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Second slide -->
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <a href="#"><img class="img-fluid" src="https://via.placeholder.com/1200x300" alt=""></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Third slide -->
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <a href="#"><img class="img-fluid" src="https://via.placeholder.com/1200x300" alt=""></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Previous and Next arrows -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#relatedProjectsCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#relatedProjectsCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </body>
+                </html>
+
+                </div>
+            </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-5 g-">
                 @foreach (var product in Model)
                 {
@@ -73,6 +135,7 @@
         </div>
     </div>
 </div>
+
 
 
 @* <div class="card shadow-sm">
