@@ -3,6 +3,7 @@
 *@
 @{
 }
+@model Cart
 
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -14,8 +15,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css"
       rel="stylesheet" /> *@
 <!-- MDB -->
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
+
 
 <style>
 
@@ -49,115 +49,49 @@ background-color: #eae8e8;
                                 <div class="p-5">
                                     <div class="d-flex justify-content-between align-items-center mb-5">
                                         <h1 class="fw-bold mb-0 text-black">Shopping Cart</h1>
-                                        <h6 class="mb-0 text-muted">3 items</h6>
+                                        <h6 class="mb-0 text-muted">@Model.CartItems.Count items</h6>  <!-- Dynamically display the count of cart items -->
                                     </div>
                                     <hr class="my-4">
 
-                                    <div class="row mb-4 d-flex justify-content-between align-items-center">
-                                        <div class="col-md-2 col-lg-2 col-xl-2">
-                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img5.webp"
-                                                 class="img-fluid rounded-3" alt="Cotton T-shirt">
-                                        </div>
-                                        <div class="col-md-3 col-lg-3 col-xl-3">
-                                            <h6 class="text-muted">Shirt</h6>
-                                            <h6 class="text-black mb-0">Cotton T-shirt</h6>
-                                        </div>
-                                        <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                            <button class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
+                                    @foreach (var item in Model.CartItems)
+                                    {
+                                        <div class="row mb-4 d-flex justify-content-between align-items-center">
+                                            <div class="col-md-2 col-lg-2 col-xl-2">
+                                                <img src="@item.Product.Photo" class="img-fluid rounded-3" alt="@item.Product.Title">
+                                            </div>
+                                            <div class="col-md-3 col-lg-3 col-xl-3">
+                                                <h6 class="text-muted">@item.Product.Sub_Class</h6>
+                                                <h6 class="text-black mb-0">@item.Product.Title</h6>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                                <!-- Update or remove the quantity controls based on your functionality -->
+                                                @* <input type="number" class="form-control form-control-sm" value=" readonly /> *@
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                        onclick="changeQuantity(-1, @item.ProductId)">
+                                                    -
+                                                </button>
+                                                <input type="number" class="form-control text-center" value="@item.Quantity"
+                                                       id="quantityInput-@item.ProductId.ToString()" name="quantity" min="1" max="@item.Product.Quantity" readonly style="width:100px">
 
-                                            <input id="form1" min="0" name="quantity" value="1" type="number"
-                                                   class="form-control form-control-sm" />
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                        onclick="changeQuantity(1, @item.ProductId)">
+                                                    +
+                                                </button>
+                                            </div>
+                                            <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                                <h6 class="mb-0">$ @item.Product.Price</h6>
+                                            </div>
+                                            <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                                <!-- Update or add functionality for removing items -->
+                                                <button class="btn"><i class="fas fa-trash text-danger"></i></button>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4">
+                                    }
 
-                                            <button class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                        <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                            <h6 class="mb-0">€ 44.00</h6>
-                                        </div>
-                                        <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                            <a href="#!" class="text-muted"><i class="fas fa-times"></i></a>
-                                        </div>
-                                    </div>
-
-                                    <hr class="my-4">
-
-                                    <div class="row mb-4 d-flex justify-content-between align-items-center">
-                                        <div class="col-md-2 col-lg-2 col-xl-2">
-                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img6.webp"
-                                                 class="img-fluid rounded-3" alt="Cotton T-shirt">
-                                        </div>
-                                        <div class="col-md-3 col-lg-3 col-xl-3">
-                                            <h6 class="text-muted">Shirt</h6>
-                                            <h6 class="text-black mb-0">Cotton T-shirt</h6>
-                                        </div>
-                                        <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                            <button class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-
-                                            <input id="form1" min="0" name="quantity" value="1" type="number"
-                                                   class="form-control form-control-sm" />
-
-                                            <button class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                        <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                            <h6 class="mb-0">€ 44.00</h6>
-                                        </div>
-                                        <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                            <a href="#!" class="text-muted"><i class="fas fa-times"></i></a>
-                                        </div>
-                                    </div>
-
-                                    <hr class="my-4">
-
-                                    <div class="row mb-4 d-flex justify-content-between align-items-center">
-                                        <div class="col-md-2 col-lg-2 col-xl-2">
-                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img7.webp"
-                                                 class="img-fluid rounded-3" alt="Cotton T-shirt">
-                                        </div>
-                                        <div class="col-md-3 col-lg-3 col-xl-3">
-                                            <h6 class="text-muted">Shirt</h6>
-                                            <h6 class="text-black mb-0">Cotton T-shirt</h6>
-                                        </div>
-                                        <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                            <button class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-
-                                            <input id="form1" min="0" name="quantity" value="1" type="number"
-                                                   class="form-control form-control-sm" />
-
-                                            <button class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                        <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                            <h6 class="mb-0">€ 44.00</h6>
-                                        </div>
-                                        <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                            <a href="#!" class="text-muted"><i class="fas fa-times"></i></a>
-                                        </div>
-                                    </div>
-
-                                    <hr class="my-4">
-
+                                    <!-- Summary and additional controls -->
                                     <div class="pt-5">
-                                        <h6 class="mb-0">
-                                            <a href="#!" class="text-body">
-                                                <i class="fas fa-long-arrow-alt-left me-2"></i>Back to shop
-                                            </a>
-                                        </h6>
+                                        <h6 class="mb-0"><a href="#!" class="text-body"><i class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
                                     </div>
                                 </div>
                             </div>
@@ -166,16 +100,13 @@ background-color: #eae8e8;
                                     <h3 class="fw-bold mb-5 mt-2 pt-1">Summary</h3>
                                     <hr class="my-4">
 
-                                 
-
                                     <div class="d-flex justify-content-between mb-5">
                                         <h5 class="text-uppercase">Total price</h5>
-                                        <h5>€ 137.00</h5>
+                                        <!-- Dynamically calculate total price -->
+                                        <h5>$@Model.CartItems.Sum(item => item.Product.Price * item.Quantity).ToString("N0")</h5>
                                     </div>
 
-
-                                    <button type="submit" asp-controller="CheckOut" asp-action="Payment" class="btn btn-dark" style="margin-right:8px">Buy Now <i class="bi bi-credit-card-fill"></i></button>
-
+                                    <button type="submit" asp-controller="CheckOut" asp-action="Payment" class="btn btn-dark">Buy Now <i class="bi bi-credit-card-fill"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -185,3 +116,42 @@ background-color: #eae8e8;
         </div>
     </div>
 </section>
+
+@section Scripts{
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            window.changeQuantity = function (change, productId) {
+                var quantityInputId = "quantityInput-" + productId.toString();
+                var quantityInput = document.getElementById(quantityInputId);
+                if (!quantityInput) {
+                    console.error('Quantity input not found for productId: ' + productId);
+                    return; // Exit if the input is not found
+                }
+
+                var maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
+                var currentQuantity = parseInt(quantityInput.value, 10);
+                var newQuantity = currentQuantity + change;
+
+                newQuantity = Math.max(1, newQuantity);
+                newQuantity = Math.min(newQuantity, maxQuantity);
+
+                // Update the input value
+                quantityInput.value = newQuantity;
+
+                // Call the server-side update (assuming you have jQuery for AJAX)
+                $.post('/Cart/UpdateCartItemQuantity', { productId: productId, newQuantity: newQuantity }, function (response) {
+                    console.log('Quantity updated successfully');
+                
+                }).fail(function () {
+                    console.error('Failed to update quantity');
+            
+                });
+            };
+        });
+    </script>
+
+
+
+}
+
