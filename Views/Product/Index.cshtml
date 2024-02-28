@@ -9,18 +9,20 @@
 @{
     var firstProduct = Model.FirstOrDefault();
 }
+@using Microsoft.AspNetCore.Identity;
+@using BuyBikeShop.Data;
+@inject UserManager<Customer> userManager
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.0.0-beta2/font/bootstrap-icons.css" rel="stylesheet">
 
 
-
-<!-- Page Content -->
 <div class="container">
 
-    <!-- Portfolio Item Heading -->
+
     <h1 class="my-4">
         @firstProduct.Class_Name-@firstProduct.Sub_Class
     </h1>
 
-    <!-- Portfolio Item Row -->
     <div class="row">
 
         <div class="col-md-8">
@@ -67,7 +69,7 @@
                 <div class="text-danger fw-bold">
                     Age Restriction:<span class="text-black">@firstProduct.Age_Limit+</span>
                 </div>
-                <div class="text-info fw-bold">Quantity: <span class="text-black">@firstProduct.Quantity</span></div>
+                <div class="text-info fw-bold">In-Stock: <span class="text-black">@firstProduct.Quantity</span></div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-2 ">
@@ -81,54 +83,175 @@
                 </small>
             </div>
 
+
             <div style="margin-top:20px">
-                <button type="button" class="btn btn-outline-success" style="margin-right:12px">Buy Now</button>
-                <button type="button" class="btn btn-outline-info">Add To Cart <i class="bi bi-cart"></i></button>
+               
+                <form asp-controller="CheckOut" asp-action="Payment"  method="post">
+                    <input type="hidden" name="productId" value="@firstProduct.Id" />
+                    <div class="input-group mb-3 mt-3" style="width: 130px;">
+                        <button class="btn btn-outline-secondary" type="button" id="button-minus" onclick="changeQuantity(-1)">-</button>
+                        <input type="number" class="form-control text-center" value="1" id="quantityInput" name="quantity" min="1" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="button-plus" onclick="changeQuantity(1)">+</button>
+                    </div>
 
+                    <div style="margin-top:20px">
+                        <button type="submit"  asp-controller="CheckOut" asp-action="Payment" class="btn btn-outline-success" style="margin-right:8px">Buy Now <i class="bi bi-credit-card-fill"></i></button>
+                        <button type="button" class="btn btn-outline-info">Add To Cart <i class="bi bi-cart-fill"></i></button>
+                    
+                
+                 @if (User.Identity.IsAuthenticated)
+                {
+
+
+                    <button type="button" class="btn btn-outline-danger" style="margin-left:10px" data-bs-toggle="modal" data-bs-target="#alertModal" title="Notify me when there is new products">Notify Me <i class="bi bi-bell-fill"></i></button>
+                    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Notification  <i class="bi bi-bell-fill"></i></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <i class="bi bi-info"></i>Your request has been registered you're on the waiting list
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                    </div>
+                </form>
             </div>
-
-            
-
             
         </div>
 
     </div>
-    <!-- /.row -->
-    <!-- Related Projects Row -->
-    <h3 class="my-4">Related Projects</h3>
+
+    <h3 class="my-4">Related Products</h3>
 
     <div id="relatedProjectsCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="row">
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <a href="#"><img class="img-fluid" src="https://via.placeholder.com/500x300" alt=""></a>
+            @{
+                int counter = 0;
+                bool isActive = true;
+                int totalItems = Model.Count();
+            }
+            @for (int i = 0; i < totalItems; i += 3)
+            {
+                <div class="carousel-item @(isActive ? "active" : "")">
+                    <div class="row" style="margin-left:120px">
+                        @foreach (var product in Model.Skip(i).Take(3))
+                        {
+                            
+                            <div class="col-md-4 col-sm-6 mb-4">
+                                <a asp-controller="Product" asp-action="" asp-route-id="@product.Id"><img class="img-fluid" style="height:200px" src="@product.Photo" alt="@product.Title"></a>
+                                
+                                <small style="display: block;">@product.Title</small>
+
+                                @if (product.Sale_Perc > 0)
+                                {
+                                    <p class="mb-1">
+                                        <s>@product.Price.ToString("N0")$</s> <span class="text-danger">-@product.Sale_Perc% Sale</span>
+                                    </p>
+                                    <p class="text-success mb-2">@((product.Price - (product.Price * product.Sale_Perc / 100.0)).ToString("N0"))$</p>
+                                }
+                                else
+                                {
+                                    <p class="mb-6">@product.Price.ToString("N0")$</p>
+                                }
+                            </div>
+                        }
+                        @if (i + 3 >= totalItems)
+                        {
+                            int remainingItems = 3 - (totalItems % 3);
+                            remainingItems = remainingItems == 3 ? 0 : remainingItems; 
+                            @for (int j = 0; j < remainingItems; j++)
+                            {
+                                <div class="col-md-4 col-sm-6 mb-4">
+                                    <div class="coming-soon-placeholder" style=" padding-top:100px;">
+                                        <b>Coming Soon <span class="bi bi-hourglass-split" style="font-size:x-large"></span></b>
+                                    </div>
+                                </div>
+                            }
+                        }
                     </div>
                 </div>
-            </div>
-            <!-- Repeat the structure above for more slides with 4 images each -->
+                isActive = false;
+            }
         </div>
         <a class="carousel-control-prev" href="#relatedProjectsCarousel" role="button" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="bi bi-chevron-left text-dark" style="font-size: 2rem;"></span>
             <span class="visually-hidden">Previous</span>
         </a>
         <a class="carousel-control-next" href="#relatedProjectsCarousel" role="button" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="bi bi-chevron-right text-dark" style="font-size: 2rem;"></span>
             <span class="visually-hidden">Next</span>
         </a>
     </div>
 
 
-    <!-- /.row -->
-
 </div>
-<!-- /.container -->
+
+
+<script>
+    
+
+    function changeQuantity(change) {
+        var quantityInput = document.getElementById('quantityInput');
+        var currentQuantity = parseInt(quantityInput.value, 10);
+        var newQuantity = currentQuantity + change;
+
+        // Ensure new quantity is not less than 1
+        newQuantity = Math.max(1, newQuantity);
+        newQuantity = Math.min(newQuantity, @firstProduct.Quantity);
+
+        quantityInput.value = newQuantity;
+    }
+
+    
+    $('#alertModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    });
+</script>
+
+
+@* document.getElementById('button-minus').addEventListener('click', function () {
+        updateQuantity(-1);
+    });
+
+    document.getElementById('button-plus').addEventListener('click', function () {
+        updateQuantity(1);
+    });
+
+    function updateQuantity(change) {
+        var quantityInput = document.getElementById('quantityInput');
+        var currentQuantity = parseInt(quantityInput.value, 10);
+        var newQuantity = currentQuantity + change;
+
+        if (newQuantity >= 1 && newQuantity <= @firstProduct.Quantity) {
+            quantityInput.value = newQuantity;
+            //update asp-route-quantity
+            document.getElementById('buyNowButton').setAttribute('asp-route-quantity', newQuantity.toString());
+        }
+    } *@
+
+@* document.addEventListener("DOMContentLoaded", function () {
+        var buyNowButton = document.getElementById('buyNowButton');
+        buyNowButton.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            var quantity = document.getElementById('quantityInput').value;
+            //limit quantity to max
+            quantity = Math.max(1, Math.min(quantity, @firstProduct.Quantity));
+
+            //change the url so we can use the routes
+            var url = `@Url.Action("Payment", "CheckOut")?quantity=${quantity}&productId=${@firstProduct.Id}`
+            window.location.href = url;
+        });
+    }); *@
+
+
