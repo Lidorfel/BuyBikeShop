@@ -18,9 +18,25 @@ namespace BuyBikeShop.Controllers
             return View(Parts);
         }
         [HttpPost]
-        public IActionResult GetFilteredProducts(string[] CategoriesChosen, string sortOption)
+        public IActionResult GetFilteredProducts(string[] CategoriesChosen, string sortOption, string priceRange)
         {
-            IQueryable<Product> products = _context.Products;
+            string[] range = null;
+            double minRange = double.MinValue;
+            double maxRange = double.MaxValue;
+
+            if (priceRange != null)
+            {
+                range = priceRange.Split('&');
+                if (double.TryParse(range[0], out double x))
+                {
+                    minRange = x;
+                }
+                if (double.TryParse(range[1], out double y))
+                {
+                    maxRange = y;
+                }
+            }
+            IQueryable<Product> products = _context.Products.Where(p => Math.Floor(p.Price * (1 - (p.Sale_Perc / 100.0))) >= minRange & Math.Floor(p.Price * (1 - (p.Sale_Perc / 100.0))) <= maxRange);
 
             if (CategoriesChosen != null && CategoriesChosen.Length > 0)
             {
@@ -43,6 +59,9 @@ namespace BuyBikeShop.Controllers
                     break;
                 case "mostRating":
                     products = products.OrderByDescending(p => p.Rating);
+                    break;
+                case "specificDate":
+                    products = products.OrderBy(p => p.ReleaseDate);
                     break;
                 default:
                     // Handle default case, if needed
