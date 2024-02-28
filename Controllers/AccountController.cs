@@ -4,6 +4,8 @@ using BuyBikeShop.Data;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace BuyBikeShop.Controllers
 {
@@ -11,12 +13,14 @@ namespace BuyBikeShop.Controllers
     {
         private readonly SignInManager<Customer> signInManager;
         private readonly UserManager<Customer> userManager;
+		private readonly BuyBikeShopContext _context;
 
-        public AccountController(SignInManager<Customer> signInManager, UserManager<Customer> userManager)
+		public AccountController(SignInManager<Customer> signInManager, UserManager<Customer> userManager,BuyBikeShopContext context)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
-        }
+			this._context = context;
+		}
         public IActionResult Login()
         {
             return View();
@@ -72,6 +76,62 @@ namespace BuyBikeShop.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
-        }
-    }
+		}
+		[Authorize]
+		public async Task<IActionResult> MyOrders()
+		{
+            //can't be null because [Authorize]
+			Customer curUser = _context.Customers.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            /*await CreateOrderForTest(curUser!);*/
+            List<Order> orders = await GetOrders(curUser!);
+			return View(orders);
+		}
+		public async Task<List<Order>> GetOrders(Customer curUser=null)
+		{
+            if (curUser != null)
+            {
+                List<Order> orders = await _context.Orders.Where(o => o.CustomerId == curUser.Id)
+                    .Include(o => o.CustomerUser)
+                    .Include(o => o.OrderProducts)
+                        .ThenInclude(op => op.Product)
+                    .ToListAsync();
+
+                return orders;
+            }
+            return new List<Order> ();
+		}
+		public async Task CreateOrderForTest(Customer curUser = null)
+		{
+
+			// Assume you have retrieved products from the database
+			List<Models.Product> products = await _context.Products.Take(2).ToListAsync(); // Taking two products for the order
+
+			// Create the order
+			Order order = new Order
+			{
+				OrderDate = DateTime.Now,
+				CustomerId = curUser != null ? curUser.Id : null,
+                CustomerName = curUser != null ? curUser.FName.ToString() +curUser.LName.ToString() : null , //instead of null, can take name from payment page
+				OrderProducts = new List<OrderProduct>
+                    {
+	                    new OrderProduct
+	                    {
+		                    Product = products[0],
+		                    Quantity = 3, // Assume the quantity ordered is 2
+                            UnitPrice = products[0].Price // Assume the unit price is the product's price
+                        },
+	                    new OrderProduct
+	                    {
+		                    Product = products[1],
+		                    Quantity = 2, // Assume the quantity ordered is 1
+                            UnitPrice = products[1].Price // Assume the unit price is the product's price
+	                    }
+                    }
+			};
+
+			// Add order to the database
+			_context.Orders.Add(order);
+			await _context.SaveChangesAsync();
+		}
+	}
 }

@@ -1,4 +1,62 @@
-﻿@model IEnumerable<BuyBikeShop.Models.Product>
-<div>
+﻿@using BuyBikeShop.Data.Enum
+@model IEnumerable<BuyBikeShop.Models.Product>
+<div class="container mt-4" style="width:94%">
+    <div class="row justify-content-between align-items-center">
+        <h4 class="col-md-4">Filtering Options : </h4>
+        <div class="col-md-5">
+            @foreach (var en in Enum.GetValues(typeof(PartCategory)))
+            {
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" value="@en.ToString()" type="checkbox" id="category-@en.ToString()" name="categories">
+                    <label class="form-check-label" for="category-@en.ToString()">@en.ToString()</label>
+                </div>
+            }
+        </div>
+        <div class="col-md-3">
+            <form class="input-group" method="get" asp-controller="Bike" asp-action="Index" id="sortForm">
+                <label class="input-group-text" for="sortOption">Filter By:</label>
+                <select class="form-select" id="sortOption" name="sortOption">
+                    <option selected>Choose...</option>
+                    <option value="lowToHigh">Price Low to High</option>
+                    <option value="highToLow">Price High to Low</option>
+                    <option value="mostRating">Most Rating</option>
+                </select>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="products-list">
     <partial name="_ProductsPartialView" model="Model" />
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('input[type="checkbox"][name="categories"], #sortOption').on('change', function () {
+                updateProductsList();
+            });
+            function updateProductsList() {
+                var selectedCategories = $('input[type="checkbox"][name="categories"]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                var sortOption = $('#sortOption').val();
+
+                $.ajax({
+                    url: '@Url.Action("GetFilteredProducts", "Part")',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: {
+                        CategoriesChosen: selectedCategories,
+                        sortOption: sortOption
+                    },
+                    success: function (result) {
+                        $('#products-list').html(result);
+                    },
+                    error: function () {
+                        console.log("Error occurred while updating products list.");
+                    }
+                });
+            }
+        });
+    </script>
+}

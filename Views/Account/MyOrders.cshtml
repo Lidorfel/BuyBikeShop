@@ -1,0 +1,104 @@
+﻿@* @model IEnumerable<Order>
+@{
+	if (Model.Count() == 0)
+	{
+		<h1>You haven't placed orders yet - <a class="text-decoration-none" asp-action="Index" asp-controller="Home">Start Shop Now</a></h1>
+	}
+	else
+	{
+		<h1>Your Orders : </h1>
+		@foreach(var ord in Model){
+			<h3>Order Number - @ord.OrderId</h3>
+
+			<h4>Total Price - @ord.TotalPrice</h4>
+			@foreach (var p in ord.OrderProducts)
+			{
+				<h6>product name - @p.Product.Title</h6>
+				<h6>orderProduct id - @p.OrderProductId</h6>
+				<h6>p quantity  - @p.Quantity</h6>
+				<h6>p unitPrice - @p.UnitPrice</h6>
+			}
+		}
+
+	}
+}
+ *@
+ @model IEnumerable<Order>
+ @{
+     if (Model.Count() == 0)
+        {
+        <div class="d-flex flex-column justify-content-center align-items-center mt-3">
+            <h1>You haven't placed orders yet</h1>
+            <h1><a class="text-decoration-none" asp-action="Index" asp-controller="Home">Start Shop Now</a></h1>
+
+        </div>
+    }
+    else
+    {
+        <div class="container mt-4">
+            <h1 class="text-center mb-4">Your Orders</h1>
+            @foreach (var ord in Model)
+            {
+                <div class="row justify-content-center mb-3">
+                    <div class="col-md-8 ">
+                        <div class="card mb-4 shadow">
+                            <div class="card-header bg-black text-white d-flex justify-content-between align-items-center">
+                                <h5 class="card-title m-0">Order details</h5>
+                                <h5 class="m-0">Order Number - <span style="color:#BBE2EC">@ord.OrderId</span></h5>
+                            </div>
+                            <div class="card-datatable table-responsive">
+                                <table class="datatables-order-details table">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th class="w-50">Products</th>
+                                            <th class="w-25">Price</th>
+                                            <th class="w-25">Quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var p in ord.OrderProducts)
+                                        {
+                                            <tr>
+                                                <td class="align-middle">
+                                                    <img src="@p.Product.Photo" width="100px" />
+                                                </td>
+                                                <td class="align-middle">
+                                                    @p.Product.Title
+                                                </td>
+                                                <td class="align-middle">
+                                                    @p.UnitPrice.ToString("N0")$
+                                                </td>
+                                                <td class="align-middle">
+                                                    @p.Quantity
+                                                </td>
+                                                <td class="align-middle">
+                                                    @((p.Quantity * p.UnitPrice).ToString("N0"))$
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-between align-items-center m-3 mb-2 p-1">
+                                    <div>
+                                        Created at : <span class="text-muted">@ord.OrderDate.ToShortDateString()</span>
+                                    </div>
+                                    <div>
+                                        Tracking Status : <span class="text-primary">Arrived</span>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="w-px-100 mb-0">Total Price: @ord.TotalPrice.ToString("N0")$</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+    }
+}
