@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BuyBikeShop.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BuyBikeShop.Controllers
 {
@@ -19,5 +20,13 @@ namespace BuyBikeShop.Controllers
 
             return View("Cart");
         }
+
+        public IActionResult CreateOrder(Customer customer)
+        {
+            /*Currently not used but when clickng the place order this should have some connection  with the cart and all its items to an order of a customer*/
+            return View("Payment");
+        }
+
+        
     }
 }
