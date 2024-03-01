@@ -66,24 +66,31 @@ background-color: #eae8e8;
                                             <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                                                 <!-- Update or remove the quantity controls based on your functionality -->
                                                 @* <input type="number" class="form-control form-control-sm" value=" readonly /> *@
-                                                <button class="btn btn-outline-secondary" type="button"
-                                                        onclick="changeQuantity(-1, @item.ProductId)">
-                                                    -
-                                                </button>
-                                                <input type="number" class="form-control text-center" value="@item.Quantity"
-                                                       id="quantityInput-@item.ProductId.ToString()" name="quantity" min="1" max="@item.Product.Quantity" readonly style="width:100px">
+                                                <form method="post" action="@Url.Action("UpdateCartItemQuantity", "Cart")">
+                                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                                    <input type="hidden" name="currentQuantity" value="@item.Quantity" />
 
-                                                <button class="btn btn-outline-secondary" type="button"
-                                                        onclick="changeQuantity(1, @item.ProductId)">
-                                                    +
-                                                </button>
+                                                    <!-- Decrement Button -->
+                                                    <div class="input-group mb-3 mt-3" style="width: 140px;">
+                                                    <button type="submit" class="btn btn-light btn-outline-secondary" style="width:40px; max-width:40px" name="change" value="decrease">-</button>
+
+                                                  
+                                                    <input type="number" class="form-control text-center" style="width:50px" value="@item.Quantity" id="quantityInput" name="quantity" min="1" readonly>
+
+                                                    <!-- Increment Button -->
+                                                    <button type="submit" class="btn btn-light btn-outline-secondary" style="width:40px; max-width:40px;" name="change" value="increase">+</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                             <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
                                                 <h6 class="mb-0">$ @item.Product.Price</h6>
                                             </div>
                                             <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                 <!-- Update or add functionality for removing items -->
-                                                <button class="btn"><i class="fas fa-trash text-danger"></i></button>
+                                                <form method="post" asp-controller="Cart" asp-action="RemoveFromCart">
+                                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                                    <button type="submit" class="btn"><i class="fas fa-trash text-danger" onclick="return confirm('Are you sure you want to remove this item from the cart?');"></i></button>
+                                                </form>
                                             </div>
                                         </div>
                                         <hr class="my-4">
@@ -117,41 +124,38 @@ background-color: #eae8e8;
     </div>
 </section>
 
-@section Scripts{
+@section Scripts {
+    @* <script>
+        document.querySelectorAll('.quantity-change').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent form submission
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            window.changeQuantity = function (change, productId) {
-                var quantityInputId = "quantityInput-" + productId.toString();
-                var quantityInput = document.getElementById(quantityInputId);
-                if (!quantityInput) {
-                    console.error('Quantity input not found for productId: ' + productId);
-                    return; // Exit if the input is not found
-                }
+                var form = this.closest('form'); // Find the closest form to the button
+                var formData = new FormData(form); // Create FormData object from the form
 
-                var maxQuantity = parseInt(quantityInput.getAttribute('max'), 10);
-                var currentQuantity = parseInt(quantityInput.value, 10);
-                var newQuantity = currentQuantity + change;
-
-                newQuantity = Math.max(1, newQuantity);
-                newQuantity = Math.min(newQuantity, maxQuantity);
-
-                // Update the input value
-                quantityInput.value = newQuantity;
-
-                // Call the server-side update (assuming you have jQuery for AJAX)
-                $.post('/Cart/UpdateCartItemQuantity', { productId: productId, newQuantity: newQuantity }, function (response) {
-                    console.log('Quantity updated successfully');
-                
-                }).fail(function () {
-                    console.error('Failed to update quantity');
-            
-                });
-            };
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': document.getElementsByName("__RequestVerificationToken")[0].value // CSRF token
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text(); // Assuming the response is text, not JSON
+                    })
+                    .then(data => {
+                        console.log('Quantity updated successfully');
+                        location.reload(); // Reload the page to reflect the updated quantity
+                    })
+                    .catch(error => {
+                        console.error('Failed to update quantity', error);
+                    });
+            });
         });
-    </script>
-
-
-
+    </script> *@
 }
+
 

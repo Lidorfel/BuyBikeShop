@@ -20,7 +20,13 @@ builder.Services.AddIdentity<Customer,IdentityRole>(
     }
     ).AddEntityFrameworkStores<BuyBikeShopContext>().AddDefaultTokenProviders();
 builder.Services.AddMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(1); // Sets the session timeout
+    options.Cookie.HttpOnly = true; // Makes the cookie inaccessible to client-side scripts
+    options.Cookie.IsEssential = true; // Marks the session cookie as essential for your application
+});
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 var app = builder.Build();
 
@@ -31,8 +37,11 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 
+app.UseSession(); // Add this line here to ensure session middleware is used
+
 app.UseRouting();
 
+app.UseAuthentication(); // Ensure authentication middleware is used
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -40,3 +49,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
