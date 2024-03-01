@@ -38,6 +38,9 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            $(window).on('beforeunload', function () {
+                clearAllFilters();
+            });
             $('input[type="checkbox"][name="categories"], #sortOption, #priceRangeMin, #priceRangeMax').on('change', function () {
                 updateProductsList();
             });
@@ -67,6 +70,12 @@
                         console.log("Error occurred while updating products list.");
                     }
                 });
+            }
+            function clearAllFilters(){
+                $('#sortOption').val("");
+                $('#priceRangeMin').val("");
+                $('#priceRangeMax').val("");
+                $('input[type="checkbox"][name="categories"]').prop('checked', false);
             }
         });
     </script>

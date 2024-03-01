@@ -84,8 +84,8 @@
                     <li><a class="nav-link px-2 text-danger" asp-controller="Sale" asp-action="index">Sale</a></li>
                 </ul>
 
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                    <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search">
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" id="searchBarForm" role="search" method="get" asp-action="FilteredBySearch" asp-controller="Home">
+                    <input type="search" id="searchBar" name="searchBar" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="searchBar">
                 </form>
                 <partial name="_LoginPartial" />
             </div>
@@ -110,3 +110,38 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+@section Scripts{
+    <script>
+        document.getElementById("#searchBar").onchange = function () {
+            document.getElementById("#searchBarForm").submit();
+        };
+    </script>
+}
+@* 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#searchBar').on('change', function () {
+                updateProductsList();
+            });
+            function updateProductsList() {
+                var searchInput = $('#searchBar').val();
+                $.ajax({
+                    url: '@Url.Action("Index","Home")',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: {
+                        searchInput: searchInput
+                    },
+                    success: function (result) {
+                        $('#products-list').html(result);
+                    },
+                    error: function () {
+                        console.log("Error occurred while updating products list.");
+                    }
+
+                });
+            }
+        });
+    </script>
+} *@
