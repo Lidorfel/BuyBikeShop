@@ -25,19 +25,32 @@ namespace BuyBikeShop.Controllers
         [HttpGet]   
         public async Task<IActionResult> FilteredBySearch(string searchBar)
         {
-            List<Product> products;
-            if (string.IsNullOrEmpty(searchBar))
+            IQueryable<Product> products = _context.Products;
+            if (!string.IsNullOrEmpty(searchBar))
             {
-                products = await _context.Products.ToListAsync();
+                searchBar = searchBar.ToLower();
+                string[] keyWords = searchBar.Split();
+                if (keyWords.Length > 3)
+                {
+                    products = products.Where(p => p.Class_Name.ToString().ToLower().Contains(searchBar)
+                || p.Sub_Class.ToString().ToLower().Contains(searchBar)
+                || p.Title.ToString().ToLower().Contains(searchBar)
+                || p.Color.ToString().ToLower().Contains(searchBar)
+                );
+                }
+                else
+                {
+                    foreach (string word in keyWords)
+                    {
+                        products = products.Where(p => p.Class_Name.ToString().ToLower().Contains(word)
+                        || p.Sub_Class.ToString().ToLower().Contains(word)
+                        || p.Title.ToString().ToLower().Contains(word)
+                        || p.Color.ToString().ToLower().Contains(word)
+                        );
+                    }
+                }
             }
-            else
-            {
-                products = await _context.Products.Where(p=>p.Class_Name.ToString().ToLower().Contains(searchBar.ToLower()) 
-                || p.Sub_Class.ToString().ToLower().Contains(searchBar.ToLower()) 
-                || p.Title.ToString().ToLower().Contains(searchBar.ToLower()) 
-                || p.Color.ToString().ToLower().Contains(searchBar.ToLower())
-                ).ToListAsync();
-            }
+            await products.ToListAsync();
             return View("Index",products);
         }
         [HttpPost]
