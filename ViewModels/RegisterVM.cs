@@ -14,6 +14,7 @@ namespace BuyBikeShop.ViewModels
         [Required]
         public string? Phone { get; set; }
         [Required]
+        [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
 
         [Required]
