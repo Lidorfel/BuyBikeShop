@@ -1,4 +1,4 @@
-﻿@* @model IEnumerable<Order>
+﻿﻿@* @model IEnumerable<Order>
 @{
 	if (Model.Count() == 0)
 	{
@@ -24,9 +24,9 @@
 }
  *@
  @model IEnumerable<Order>
- @{
-     if (Model.Count() == 0)
-        {
+@{
+    if (Model.Count() == 0)
+    {
         <div class="d-flex flex-column justify-content-center align-items-center mt-3">
             <h1>You haven't placed orders yet</h1>
             <h1><a class="text-decoration-none" asp-action="Index" asp-controller="Home">Start Shop Now</a></h1>
@@ -41,8 +41,8 @@
             {
                 <div class="row justify-content-center mb-3">
                     <div class="col-md-8 ">
-                        <div class="card mb-4 shadow">
-                            <div class="card-header bg-black text-white d-flex justify-content-between align-items-center">
+                        <div class="card mb-4 shadow" style="border-radius:15px;">
+                            <div class="card-header bg-black text-white d-flex justify-content-between align-items-center" style="border-radius:15px 15px 0px 0px;">
                                 <h5 class="card-title m-0">Order details</h5>
                                 <h5 class="m-0">Order Number - <span style="color:#BBE2EC">@ord.OrderId</span></h5>
                             </div>
@@ -99,6 +99,6 @@
                 </div>
             }
         </div>
-        
+
     }
 }

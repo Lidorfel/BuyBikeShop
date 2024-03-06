@@ -1,34 +1,82 @@
-﻿@model IEnumerable<BuyBikeShop.Models.Product>
-<div class="container mt-4" style="width:94%">
+﻿﻿@using BuyBikeShop.Data.Enum
+@model IEnumerable<BuyBikeShop.Models.Product>
+<div class="container mt-4 p-3" style="width:100%; background-color:#e8e8e8">
     <div class="row justify-content-between align-items-center">
-        <h4 class="col-md-4">Filtering Options : </h4>
-        <div class="col-md-5">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="checkbox1">
-                <label class="form-check-label" for="checkbox1">Option 1</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="checkbox2">
-                <label class="form-check-label" for="checkbox2">Option 2</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="checkbox3">
-                <label class="form-check-label" for="checkbox3">Option 3</label>
-            </div>
+        <h4 class="col-md-3">Filtering Options : </h4>
+        <div class="col-md-6">
+            @foreach (var en in Enum.GetValues(typeof(ProductCategory)))
+            {
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" value="@en.ToString()" type="checkbox" id="category-@en.ToString()" name="categories">
+                    <label class="form-check-label" for="category-@en.ToString()">@en.ToString()</label>
+                </div>
+            }
+            <label for="priceRangeMin">Min: </label>
+            <input type="text" id="priceRangeMin" placeholder="Min Price" style="width:80px;font-size:90%;" class="border rounded-2 mx-1" />
+            <label for="priceRangeMax">Max: </label>
+            <input type="text" id="priceRangeMax" placeholder="Max Price" style="width:80px;font-size:90%;" class="border rounded-2 mx-1" />
+
         </div>
         <div class="col-md-3">
-            <div class="input-group">
-                <label class="input-group-text" for="filterOptions">Filter By:</label>
-                <select class="form-select" id="filterOptions">
+            <form class="input-group" method="get" asp-controller="Sale" asp-action="Index" id="sortForm">
+                <label class="input-group-text" for="sortOption">Filter By:</label>
+                <select class="form-select" id="sortOption" name="sortOption">
                     <option selected>Choose...</option>
                     <option value="lowToHigh">Price Low to High</option>
                     <option value="highToLow">Price High to Low</option>
                     <option value="mostRating">Most Rating</option>
-                 </select>
-            </div>
+                    <option value="specificDate">Release Date</option>
+
+                </select>
+            </form>
         </div>
     </div>
 </div>
-<div>
+<div id="products-list">
     <partial name="_ProductsPartialView" model="Model" />
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(window).on('beforeunload', function () {
+                clearAllFilters();
+            });
+            $('input[type="checkbox"][name="categories"], #sortOption, #priceRangeMin, #priceRangeMax').on('change', function () {
+                updateProductsList();
+            });
+
+            function updateProductsList() {
+                var selectedCategories = $('input[type="checkbox"][name="categories"]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                var sortOption = $('#sortOption').val();
+                var minPrice = $('#priceRangeMin').val();
+                var maxPrice = $('#priceRangeMax').val();
+                var priceRange = minPrice + "&" + maxPrice;
+                $.ajax({
+                    url: '@Url.Action("GetFilteredProducts", "Sale")',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: {
+                        CategoriesChosen: selectedCategories,
+                        sortOption: sortOption,
+                        priceRange: priceRange,
+                    },
+                    success: function (result) {
+                        $('#products-list').html(result);
+                    },
+                    error: function () {
+                        console.log("Error occurred while updating products list.");
+                    }
+                });
+            }
+            function clearAllFilters() {
+                $('#sortOption').val("");
+                $('#priceRangeMin').val("");
+                $('#priceRangeMax').val("");
+                $('input[type="checkbox"][name="categories"]').prop('checked', false);
+            }
+        });
+    </script>
+}

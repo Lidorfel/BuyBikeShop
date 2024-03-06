@@ -14,12 +14,13 @@ namespace BuyBikeShop.ViewModels
         [Required]
         public string? Phone { get; set; }
         [Required]
+        [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         public string? Password { get; set; }
-        [Compare("Password",ErrorMessage ="Password don't match.")]
+        [Compare("Password", ErrorMessage = "Password don't match.")]
         [DataType(DataType.Password)]
 
         public string? ConfirmPassword { get; set; }
