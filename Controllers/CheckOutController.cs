@@ -1,6 +1,6 @@
 ﻿using BuyBikeShop.Data;
 using BuyBikeShop.Models;
-
+using BuyBikeShop.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,33 +21,8 @@ namespace BuyBikeShop.Controllers
         [HttpPost]
         public IActionResult Payment(int productId, int quantity) // CustomerPaymentDetailsVM cp
         {
-            // Here you can access productId and quantity directly
-            ViewBag.Quantity = quantity;
-            ViewBag.Id = productId;
-
-            // Perform any additional logic you need
-
-            return View("Payment"); // quantity ?
-        }
-
-
-
-
-       
-
-        /*public IActionResult Cart()
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-               *//*Create a cart for the user find some logic to it because he is not connected*//*
-            }
-            
-
-
-            var userId = userManager.GetUserId(User);
-            var cart = CartManager.GetCart(userId);
-
-            // Fetch product details for each cart item
+            var cart = CartManager.GetCart(HttpContext);
+            CartManager.AddToCart(cart,productId, quantity);
             foreach (var item in cart.CartItems)
             {
                 var product = _context.Products.Find(item.ProductId);
@@ -56,10 +31,58 @@ namespace BuyBikeShop.Controllers
                     item.Product = product; // Assuming CartItem has a Product property
                 }
             }
+            var payVM = new PaymentVM();
+            payVM.Cart = cart;
+            payVM.cp = new CustomerPaymentDetailsVM();
 
-            return View("Cart",cart);
-        }*/
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+
+            // Perform any additional logic you need
+
+            return View("Payment",payVM); 
+        }
+        [HttpGet]
+
+        public IActionResult CartPayment()
+        {
+            var cart = CartManager.GetCart(HttpContext);
+            var payVM = new PaymentVM();
+            payVM.Cart = cart;
+            payVM.cp = new CustomerPaymentDetailsVM();
+
+            return View("Payment", payVM);
+
+        }
+
+
+
+
+
+
+/*public IActionResult Cart()
+{
+    if (!User.Identity.IsAuthenticated)
+    {
+       *//*Create a cart for the user find some logic to it because he is not connected*//*
+    }
+
+
+
+    var userId = userManager.GetUserId(User);
+    var cart = CartManager.GetCart(userId);
+
+    // Fetch product details for each cart item
+    foreach (var item in cart.CartItems)
+    {
+        var product = _context.Products.Find(item.ProductId);
+        if (product != null)
+        {
+            item.Product = product; // Assuming CartItem has a Product property
+        }
+    }
+
+    return View("Cart",cart);
+}*/
+[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Cart()
         {
             Cart cart;

@@ -4,12 +4,7 @@
 
 
     {
-
-        public int Id { get; set; }
-        public int Quantity { get; set; }
-
-
-        // public SomeModelCart Cart { get; set; } /*by muhammad*/
+         public Cart Cart { get; set; } /*by muhammad*/
 
 
         public CustomerPaymentDetailsVM cp { get; set; }

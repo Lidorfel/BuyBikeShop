@@ -6,7 +6,7 @@ public static class CartManager
 {
     // ConcurrentDictionary to handle concurrent access in a web environment
     private static readonly ConcurrentDictionary<string, Cart> Carts = new ConcurrentDictionary<string, Cart>();
-
+    
 
     public static Cart GetCart(string customerId)
     {

@@ -52,7 +52,15 @@
 
                 var sortOption = $('#sortOption').val();
                 var minPrice = $('#priceRangeMin').val();
+                if (isNaN(parseFloat(minPrice)) || !isFinite(minPrice)) {
+                    $('#priceRangeMin').val("");
+                    minPrice = "";
+                }
                 var maxPrice = $('#priceRangeMax').val();
+                if (isNaN(parseFloat(maxPrice)) || !isFinite(maxPrice)) {
+                    $('#priceRangeMax').val("");
+                    maxPrice = "";
+                }
                 var priceRange = minPrice + "&" + maxPrice;
                 $.ajax({
                     url: '@Url.Action("GetFilteredProducts", "Sale")',
