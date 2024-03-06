@@ -1,5 +1,6 @@
 ﻿using BuyBikeShop.Data;
 using BuyBikeShop.Models;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +19,21 @@ namespace BuyBikeShop.Controllers
         }
 
         [HttpPost]
-        public IActionResult Payment(int quantity,int productId)
+        public IActionResult Payment(int productId, int quantity) // CustomerPaymentDetailsVM cp
         {
+            // Here you can access productId and quantity directly
             ViewBag.Quantity = quantity;
             ViewBag.Id = productId;
-           
-            return View("Payment",quantity);
+
+            // Perform any additional logic you need
+
+            return View("Payment"); // quantity ?
         }
+
+
+
+
+       
 
         /*public IActionResult Cart()
         {
@@ -33,6 +42,7 @@ namespace BuyBikeShop.Controllers
                *//*Create a cart for the user find some logic to it because he is not connected*//*
             }
             
+
 
             var userId = userManager.GetUserId(User);
             var cart = CartManager.GetCart(userId);
@@ -86,6 +96,37 @@ namespace BuyBikeShop.Controllers
             return View("Payment");
         }
 
-        
+
+        //Validation
+        //public async Task<IActionResult> PlaceOrderPress(RegisterVM model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        //Customer cust = new Customer
+        //        //{
+        //        //    FName = Utils.CapitalizeFirstLetter(model.FName!),
+        //        //    LName = Utils.CapitalizeFirstLetter(model.LName!),
+        //        //    Phone = model.Phone!,
+        //        //    Birthdate = model.Birthdate,
+        //        //    Email = model.Email,
+        //        //    UserName = model.Email
+        //        //};
+
+        //        var result = await userManager.CreateAsync(cust, model.Password!);
+        //        if (result.Succeeded)
+        //        {
+        //            await signInManager.SignInAsync(cust, false);
+        //            return RedirectToAction("Index", "Home");
+
+        //        }
+        //        foreach (var error in result.Errors)
+        //        {
+        //            ModelState.AddModelError("", error.Description);
+        //        }
+        //    }
+        //    return View(model);
+        //}
+
+
     }
 }
