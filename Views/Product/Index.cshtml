@@ -95,11 +95,18 @@
                     </div>
 
                     <div style="margin-top:20px">
-                        <button type="submit"  asp-controller="CheckOut" asp-action="Payment" class="btn btn-outline-success" style="margin-right:8px">Buy Now <i class="bi bi-credit-card-fill"></i></button>
-                        <button type="submit" asp-controller="Cart" asp-action="AddToCart" class="btn btn-outline-info">Add To Cart <i class="bi bi-cart-fill"></i></button>
-                    
-                
-                 @if (User.Identity.IsAuthenticated)
+                        @if(firstProduct.Quantity == 0){
+                        <button type="submit"  disabled asp-controller="CheckOut" asp-action="Payment" class="btn btn-outline-success" style="margin-right:8px">Buy Now <i class="bi bi-credit-card-fill"></i></button>
+                            <button type="submit" disabled asp-controller="Cart" asp-action="AddToCart" class="btn btn-outline-info">Add To Cart <i class="bi bi-cart-fill"></i></button>
+                        }
+                        else
+                        {
+                            <button type="submit"  asp-controller="CheckOut" asp-action="Payment" class="btn btn-outline-success" style="margin-right:8px">Buy Now <i class="bi bi-credit-card-fill"></i></button>
+                            <button type="submit"  asp-controller="Cart" asp-action="AddToCart" class="btn btn-outline-info">Add To Cart <i class="bi bi-cart-fill"></i></button>
+                        }
+                        
+
+                 @if (User.Identity.IsAuthenticated && firstProduct.Quantity == 0)
                 {
 
 
@@ -157,7 +164,7 @@
                                     <p class="mb-1">
                                         <s>@product.Price.ToString("N0")$</s> <span class="text-danger">-@product.Sale_Perc% Sale</span>
                                     </p>
-                                    <p class="text-success mb-2">@((product.Price - (product.Price * product.Sale_Perc / 100.0)).ToString("N0"))$</p>
+                                    <p class="text-success mb-2">$@((product.Price - (product.Price * product.Sale_Perc / 100.0)).ToString("N0"))</p>
                                 }
                                 else
                                 {

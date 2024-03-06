@@ -35,18 +35,33 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
 app.UseStaticFiles();
 
 app.UseSession(); // Add this line here to ensure session middleware is used
 
 app.UseRouting();
 
+
+
 app.UseAuthentication(); // Ensure authentication middleware is used
 app.UseAuthorization();
+
+
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+app.UseEndpoints(endpoints =>
+{
+	endpoints.MapControllerRoute(
+		name: "default",
+		pattern: "{controller=Home}/{action=Index}/{id?}");
+});
 
 app.Run();
 

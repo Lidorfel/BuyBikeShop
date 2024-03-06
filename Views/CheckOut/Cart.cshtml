@@ -14,8 +14,6 @@
 @* <!-- MDB -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.min.css"
       rel="stylesheet" /> *@
-<!-- MDB -->
-
 
 <style>
 
@@ -66,7 +64,7 @@ background-color: #eae8e8;
                                             <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                                                 <!-- Update or remove the quantity controls based on your functionality -->
                                                 @* <input type="number" class="form-control form-control-sm" value=" readonly /> *@
-                                                <form method="post" action="@Url.Action("UpdateCartItemQuantity", "Cart")">
+                                                <form method="post" asp-action="UpdateCartItemQuantity" asp-controller="Cart">
                                                     <input type="hidden" name="productId" value="@item.ProductId" />
                                                     <input type="hidden" name="currentQuantity" value="@item.Quantity" />
 
@@ -82,9 +80,24 @@ background-color: #eae8e8;
                                                     </div>
                                                 </form>
                                             </div>
-                                            <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                                <h6 class="mb-0">$ @item.Product.Price</h6>
-                                            </div>
+                                            @if (item.Product.Sale_Perc == 0)
+                                            {
+                                                <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                                    <h6 class="mb-0">$ @item.Product.Price</h6>
+                                                </div>
+                                            }
+                                            else
+                                            {
+
+                                                var discountAmount = ((double)item.Product.Sale_Perc / 100) * item.Product.Price;
+
+                                                // Apply the discount to get the new price, then add 1
+                                                var newPrice = item.Product.Price - discountAmount ;
+                                               
+                                                <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                                    <h6 class="mb-0">$ @newPrice.ToString("N2")</h6>
+                                                </div>
+                                            }
                                             <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                 <!-- Update or add functionality for removing items -->
                                                 <form method="post" asp-controller="Cart" asp-action="RemoveFromCart">
@@ -96,9 +109,10 @@ background-color: #eae8e8;
                                         <hr class="my-4">
                                     }
 
+
                                     <!-- Summary and additional controls -->
                                     <div class="pt-5">
-                                        <h6 class="mb-0"><a href="#!" class="text-body"><i class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
+                                        <h6 class="mb-0"><a href="/" style="text-decoration:none" class="text-body"><i class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
                                     </div>
                                 </div>
                             </div>
@@ -110,7 +124,15 @@ background-color: #eae8e8;
                                     <div class="d-flex justify-content-between mb-5">
                                         <h5 class="text-uppercase">Total price</h5>
                                         <!-- Dynamically calculate total price -->
-                                        <h5>$@Model.CartItems.Sum(item => item.Product.Price * item.Quantity).ToString("N0")</h5>
+
+                                        <h5>
+                                            $@Model.CartItems.Sum(item =>
+                                                    (item.Product.Sale_Perc > 0
+                                                    ? (item.Product.Price - (item.Product.Price * ((double)item.Product.Sale_Perc / 100)))
+                                                    : item.Product.Price)
+                                                    * item.Quantity).ToString("N2")
+                                        </h5>
+
                                     </div>
 
                                     <button type="submit" asp-controller="CheckOut" asp-action="Payment" class="btn btn-dark">Buy Now <i class="bi bi-credit-card-fill"></i></button>
@@ -124,38 +146,5 @@ background-color: #eae8e8;
     </div>
 </section>
 
-@section Scripts {
-    @* <script>
-        document.querySelectorAll('.quantity-change').forEach(button => {
-            button.addEventListener('click', function (event) {
-                event.preventDefault(); // Prevent form submission
-
-                var form = this.closest('form'); // Find the closest form to the button
-                var formData = new FormData(form); // Create FormData object from the form
-
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'RequestVerificationToken': document.getElementsByName("__RequestVerificationToken")[0].value // CSRF token
-                    }
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.text(); // Assuming the response is text, not JSON
-                    })
-                    .then(data => {
-                        console.log('Quantity updated successfully');
-                        location.reload(); // Reload the page to reflect the updated quantity
-                    })
-                    .catch(error => {
-                        console.error('Failed to update quantity', error);
-                    });
-            });
-        });
-    </script> *@
-}
 
 
