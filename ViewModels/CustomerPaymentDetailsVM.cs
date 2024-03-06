@@ -14,26 +14,26 @@ namespace BuyBikeShop.ViewModels
 
         [Required(ErrorMessage = "First Name is required")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "First name should be between 2 - 20 letters.")]
-        [RegularExpression(@"^[A-Za-z]*$", ErrorMessage = "First name must contain only letters.")]
+        [RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "First name must contain only letters.")]
         public string first_name { get; set; }
 
         [Required(ErrorMessage = "Last Name is required")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "Last name should be between 2 - 20 letters.")]
-        [RegularExpression(@"^[A-Za-z]*$", ErrorMessage = "Last name must contain only letters")]
+        [RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "Last name must contain only letters")]
         public string last_name { get; set; }
 
         [Required(ErrorMessage = "Address is required")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "Address should be between 2 - 20 letters.")]
-        [RegularExpression(@"^[A-Za-z]*$", ErrorMessage = "Address must contain only letters")]
+        [RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "Address must contain only letters")]
         public string address { get; set; }
 
         [Required(ErrorMessage = "City is required")]
-        [RegularExpression(@"^[A-Za-z]*$", ErrorMessage = "City must contain only letters")]
+        [RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "City must contain only letters")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "City name should be between 2 - 20 letters.")]
         public string city { get; set; }
 
         [Required(ErrorMessage = "Country is required")]
-        [RegularExpression(@"^[A-Za-z]*$", ErrorMessage = "Country must contain only letters")]
+        [RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "Country must contain only letters")]
         [StringLength(30, MinimumLength = 4, ErrorMessage = "Country should be between 4  - 30 letters.")]
         public string country { get; set; }
 
@@ -66,7 +66,7 @@ namespace BuyBikeShop.ViewModels
 
         [Required(ErrorMessage = "Expiration Month is required")]
         [FutureMonth(ErrorMessage = "Expiration Month must be in the future")]
-        public string ExpirationMonth { get; set; }
+        public int ExpirationMonth { get; set; }
 
         
         [Required(ErrorMessage = "Expiration Year is required")]
