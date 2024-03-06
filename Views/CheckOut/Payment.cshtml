@@ -1,4 +1,7 @@
-﻿@*
+﻿@using BuyBikeShop.ViewModels
+@model CustomerPaymentDetailsVM
+
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -30,7 +33,7 @@
         </div>
     </div>
     <div class="row cart-body">
-        <form class="form-horizontal" method="post" action="">
+        <form class="form-horizontal" method="post" action=""> 
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 col-md-push-6 col-sm-push-6" >
                 <!--REVIEW ORDER-->
                 <div class="panel panel-info" style=" border-color:black">
@@ -111,47 +114,56 @@
                         <div class="form-group">
                             <div class="col-md-12"><strong>Country:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" class="form-control" name="country" value="" />
+                                <input class="form-control" asp-for="country" value="" />
+                                <span asp-validation-for="country" class="text-danger"></span>
+
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-6 col-xs-12">
                                 <strong>First Name:</strong>
-                                <input type="text" name="first_name" class="form-control" value="@currentUser?.FName " />
+                                <input type="text" asp-for="first_name" class="form-control" value="@currentUser?.FName " />
+                                <span asp-validation-for="first_name" class="text-danger"></span>
                             </div>
                             <div class="span1"></div>
                             <div class="col-md-6 col-xs-12">
                                 <strong>Last Name:</strong>
-                                <input type="text" name="last_name" class="form-control" value="@currentUser?.LName" />
+                                <input type="text" asp-for="last_name" class="form-control" value="@currentUser?.LName" />
+                                <span asp-validation-for="last_name" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Address:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" name="address" class="form-control" value="" />
+                                <input type="text" asp-for="address" class="form-control" value="" />
+                                <span asp-validation-for="address" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>City:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" name="city" class="form-control" value="" />
+                                <input type="text" asp-for="city" class="form-control" value="" />
+                                <span asp-validation-for="city" class="text-danger"></span>
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <div class="col-md-12"><strong>Zip / Postal Code:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" name="zip_code" class="form-control" value="" />
+                                <input type="text" asp-for="zip_code" class="form-control" value="" />
+                                <span asp-validation-for="zip_code" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Phone Number:</strong></div>
-                            <div class="col-md-12"><input type="text" name="phone_number" class="form-control" value="@currentUser?.Phone" /></div>
+                            <div class="col-md-12"><input type="text" asp-for="phone_number" class="form-control" value="@currentUser?.Phone" /></div>
+                            <span asp-validation-for="phone_number" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             
                             <div class="col-md-12"><strong>Email Address:</strong></div>
-                            <div class="col-md-12"><input type="text" name="email_address" class="form-control" value="@currentUser?.Email" /></div>
+                            <div class="col-md-12"><input type="text" asp-for="email_address" class="form-control" value="@currentUser?.Email" /></div>
+                            <span asp-validation-for="email_address" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                     </div>
                 </div>
@@ -164,28 +176,31 @@
                         <div class="form-group">
                             <div class="col-md-12"><strong>Card Type:</strong></div>
                             <div class="col-md-12">
-                                <select id="CreditCardType" name="CreditCardType" class="form-control">
+                                <select id="CreditCardType" asp-for="CreditCardType" class="form-control">
                                     <option value="5">Visa</option>
                                     <option value="6">MasterCard</option>
                                     <option value="7">American Express</option>
                                     <option value="8">Discover</option>
                                 </select>
+                                <span asp-validation-for="CreditCardType" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Credit Card Number:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" name="car_number" value="" /></div>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="car_number" value="" /></div>
+                            <span asp-validation-for="car_number" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Card CVV:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" name="car_code" value="" /></div>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="car_code" value="" /></div>
+                            <span asp-validation-for="car_code" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12">
                                 <strong>Expiration Date</strong>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                <select class="form-control" name="">
+                                <select class="form-control" name="ExpirationMonth">
                                     <option value="">Month</option>
                                     <option value="01">01</option>
                                     <option value="02">02</option>
@@ -202,27 +217,21 @@
                                 </select>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                <select class="form-control" name="">
+                                <select class="form-control" name="ExpirationYear">
                                     <option value="">Year</option>
-                                    <option value="2015">2015</option>
-                                    <option value="2016">2016</option>
-                                    <option value="2017">2017</option>
-                                    <option value="2018">2018</option>
-                                    <option value="2019">2019</option>
-                                    <option value="2020">2020</option>
-                                    <option value="2021">2021</option>
-                                    <option value="2022">2022</option>
-                                    <option value="2023">2023</option>
                                     <option value="2024">2024</option>
                                     <option value="2025">2025</option>
                                     <option value="2026">2026</option>
                                     <option value="2027">2027</option>
-                                    <option value="2027">2028</option>
+                                    <option value="2028">2028</option>
                                     <option value="2028">2029</option>
-                                    <option value="2029">2030</option>
+                                    <option value="2030">2030</option>
                                 </select>
                             </div>
                         </div>
+
+                       
+
                         <div class="form-group">
                             <div class="col-md-12">
                                 <span>Pay secure using your credit card.</span>
@@ -238,9 +247,13 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" class="btn btn-dark btn-submit-fix">Place Order</button>
+                                <button type="submit" class="btn btn-dark btn-submit-fix" style="background-color: #50C878;">Place Order</button>
+
                             </div>
                         </div>
+
+                    
+
                     </div>
                 </div>
                 <!--CREDIT CART PAYMENT END-->
@@ -252,3 +265,33 @@
     <div class="row cart-footer">
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Get the current year and month
+        var currentDate = new Date();
+        var currentYear = currentDate.getFullYear();
+        var currentMonth = currentDate.getMonth() + 1; // JavaScript months are zero-based
+
+        // Add change event listeners to the select elements
+        document.getElementById('ExpirationMonth').addEventListener('change', validateExpirationDate);
+        document.getElementById('ExpirationYear').addEventListener('change', validateExpirationDate);
+
+        // Function to validate the selected expiration date
+        function validateExpirationDate() {
+            var selectedYear = parseInt(document.getElementById('ExpirationYear').value);
+            var selectedMonth = parseInt(document.getElementById('ExpirationMonth').value);
+
+            if (selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth)) {
+                alert('Please select a future expiration date.');
+                // Clear the selected expiration date
+                document.getElementById('ExpirationMonth').selectedIndex = 0;
+                document.getElementById('ExpirationYear').selectedIndex = 0;
+            }
+        }
+    </script>
+}

@@ -87,6 +87,8 @@
             <div style="margin-top:20px">
                
                 <form asp-controller="CheckOut" asp-action="Payment"  method="post">
+                    @* <input type="hidden" name="productId" value="@firstProduct.Id"  *@/> @* send int amount if id *@
+                    @* <input type="hidden" name="quantity" value="quantity" /> *@ @* /send int amount if quantity *@
                     <input type="hidden" name="productId" value="@firstProduct.Id" />
                     <div class="input-group mb-3 mt-3" style="width: 130px;">
                         <button class="btn btn-outline-secondary" type="button" id="button-minus" onclick="changeQuantity(-1)">-</button>
@@ -97,11 +99,14 @@
                     <div style="margin-top:20px">
                         <button type="submit"  asp-controller="CheckOut" asp-action="Payment" class="btn btn-outline-success" style="margin-right:8px">Buy Now <i class="bi bi-credit-card-fill"></i></button>
                         <button type="button" class="btn btn-outline-info">Add To Cart <i class="bi bi-cart-fill"></i></button>
+ 
+
+
+
                     
                 
                  @if (User.Identity.IsAuthenticated)
                 {
-
 
                     <button type="button" class="btn btn-outline-danger" style="margin-left:10px" data-bs-toggle="modal" data-bs-target="#alertModal" title="Notify me when there is new products">Notify Me <i class="bi bi-bell-fill"></i></button>
                     <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
