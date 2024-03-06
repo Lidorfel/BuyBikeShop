@@ -134,8 +134,10 @@ background-color: #eae8e8;
                                         </h5>
 
                                     </div>
+                                    <form method="get" asp-action="CartPayment" asp-controller="CheckOut">
+                                        <button type="submit"  class="btn btn-dark">Buy Now <i class="bi bi-credit-card-fill"></i></button>
 
-                                    <button type="submit" asp-controller="CheckOut" asp-action="Payment" class="btn btn-dark">Buy Now <i class="bi bi-credit-card-fill"></i></button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

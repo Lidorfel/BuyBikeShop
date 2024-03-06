@@ -6,6 +6,11 @@ namespace BuyBikeShop.ViewModels
 
     public class CustomerPaymentDetailsVM
     {
+        public CustomerPaymentDetailsVM()
+        {
+            
+
+        }
 
         [Required(ErrorMessage = "First Name is required")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "First name should be between 2 - 20 letters.")]

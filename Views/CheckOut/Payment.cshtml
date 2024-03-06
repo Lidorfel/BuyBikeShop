@@ -1,5 +1,5 @@
 ﻿@using BuyBikeShop.ViewModels
-@model CustomerPaymentDetailsVM
+@model PaymentVM
 
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -41,60 +41,40 @@
                         Review Order <div class="pull-right"><small><a href="Cart" style="color:white" class="afix-1">Edit Cart</a></small></div>
                     </div>
                     <div class="panel-body">
-                        <div class="form-group">
+                        @foreach (var item in Model.Cart.CartItems){
+                            var discountAmount = ((double)item.Product.Sale_Perc / 100) * item.Product.Price;
+
+                            // Apply the discount to get the new price, then add 1
+                            var newPrice = item.Product.Price - discountAmount;
+                            var total = newPrice * item.Quantity;
+                            <div class="form-group">
                             <div class="col-sm-3 col-xs-3">
-                                <img class="img-responsive" src="//c1.staticflickr.com/1/466/19681864394_c332ae87df_t.jpg" />
+                                <img class="img-responsive" src= @item.Product.Photo />
                             </div>
                             <div class="col-sm-6 col-xs-6">
-                                <div class="col-xs-12">Product name</div>
-                                <div class="col-xs-12"><small>Quantity:<span>1</span></small></div>
+                                <div class="col-xs-12">@item.Product.Title</div>
+                                    <div class="col-xs-12"><small>Quantity: <span>@item.Quantity</span></small></div>
                             </div>
                             <div class="col-sm-3 col-xs-3 text-right">
-                                <h6><span>$</span>25.00</h6>
+                                    <h6><span>$</span>@total.ToString("N2")</h6>
+
+
                             </div>
                         </div>
                         <div class="form-group"><hr /></div>
-                        <div class="form-group">
-                            <div class="col-sm-3 col-xs-3">
-                                <img class="img-responsive" src="//c1.staticflickr.com/1/466/19681864394_c332ae87df_t.jpg" />
-                            </div>
-                            <div class="col-sm-6 col-xs-6">
-                                <div class="col-xs-12">Product name</div>
-                                <div class="col-xs-12"><small>Quantity:<span>1</span></small></div>
-                            </div>
-                            <div class="col-sm-3 col-xs-3 text-right">
-                                <h6><span>$</span>25.00</h6>
-                            </div>
-                        </div>
-                        <div class="form-group"><hr /></div>
-                        <div class="form-group">
-                            <div class="col-sm-3 col-xs-3">
-                                <img class="img-responsive" src="//c1.staticflickr.com/1/466/19681864394_c332ae87df_t.jpg" />
-                            </div>
-                            <div class="col-sm-6 col-xs-6">
-                                <div class="col-xs-12">Product name</div>
-                                <div class="col-xs-12"><small>Quantity:<span>2</span></small></div>
-                            </div>
-                            <div class="col-sm-3 col-xs-3 text-right">
-                                <h6><span>$</span>50.00</h6>
-                            </div>
-                        </div>
-                        <div class="form-group"><hr /></div>
-                        <div class="form-group">
-                            <div class="col-xs-12">
-                                <strong>Subtotal</strong>
-                                <div class="pull-right"><span>$</span><span>200.00</span></div>
-                            </div>
-                            <div class="col-xs-12">
-                                <small>Shipping</small>
-                                <div class="pull-right"><span>-</span></div>
-                            </div>
-                        </div>
-                        <div class="form-group"><hr /></div>
+                        }
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <strong>Order Total</strong>
-                                <div class="pull-right"><span>$</span><span>150.00</span></div>
+                                <div class="pull-right">
+                                    <span>$</span><span>
+                                        @Model.Cart.CartItems.Sum(item =>
+                                                (item.Product.Sale_Perc > 0
+                                                ? (item.Product.Price - (item.Product.Price * ((double)item.Product.Sale_Perc / 100)))
+                                                : item.Product.Price)
+                                                * item.Quantity).ToString("N2")
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -114,56 +94,56 @@
                         <div class="form-group">
                             <div class="col-md-12"><strong>Country:</strong></div>
                             <div class="col-md-12">
-                                <input class="form-control" asp-for="country" value="" />
-                                <span asp-validation-for="country" class="text-danger"></span>
+                                <input class="form-control" asp-for="@Model.cp.country" value="" />
+                                <span asp-validation-for="@Model.cp.country" class="text-danger"></span>
 
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-6 col-xs-12">
                                 <strong>First Name:</strong>
-                                <input type="text" asp-for="first_name" class="form-control" value="@currentUser?.FName " />
-                                <span asp-validation-for="first_name" class="text-danger"></span>
+                                <input type="text" asp-for="@Model.cp.first_name" class="form-control" value="@currentUser?.FName " />
+                                <span asp-validation-for="@Model.cp.first_name" class="text-danger"></span>
                             </div>
                             <div class="span1"></div>
                             <div class="col-md-6 col-xs-12">
                                 <strong>Last Name:</strong>
-                                <input type="text" asp-for="last_name" class="form-control" value="@currentUser?.LName" />
-                                <span asp-validation-for="last_name" class="text-danger"></span>
+                                <input type="text" asp-for="@Model.cp.last_name" class="form-control" value="@currentUser?.LName" />
+                                <span asp-validation-for="@Model.cp.last_name" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Address:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" asp-for="address" class="form-control" value="" />
-                                <span asp-validation-for="address" class="text-danger"></span>
+                                <input type="text" asp-for="@Model.cp.address" class="form-control" value="" />
+                                <span asp-validation-for="@Model.cp.address" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>City:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" asp-for="city" class="form-control" value="" />
-                                <span asp-validation-for="city" class="text-danger"></span>
+                                <input type="text" asp-for="@Model.cp.city" class="form-control" value="" />
+                                <span asp-validation-for="@Model.cp.city" class="text-danger"></span>
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <div class="col-md-12"><strong>Zip / Postal Code:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" asp-for="zip_code" class="form-control" value="" />
-                                <span asp-validation-for="zip_code" class="text-danger"></span>
+                                <input type="text" asp-for="@Model.cp.zip_code" class="form-control" value="" />
+                                <span asp-validation-for="@Model.cp.zip_code" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Phone Number:</strong></div>
-                            <div class="col-md-12"><input type="text" asp-for="phone_number" class="form-control" value="@currentUser?.Phone" /></div>
-                            <span asp-validation-for="phone_number" class="text-danger" style="margin-left: 17px;"></span>
+                            <div class="col-md-12"><input type="text" asp-for="@Model.cp.phone_number" class="form-control" value="@currentUser?.Phone" /></div>
+                            <span asp-validation-for="@Model.cp.phone_number" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             
                             <div class="col-md-12"><strong>Email Address:</strong></div>
-                            <div class="col-md-12"><input type="text" asp-for="email_address" class="form-control" value="@currentUser?.Email" /></div>
-                            <span asp-validation-for="email_address" class="text-danger" style="margin-left: 17px;"></span>
+                            <div class="col-md-12"><input type="text" asp-for="@Model.cp.email_address" class="form-control" value="@currentUser?.Email" /></div>
+                            <span asp-validation-for="@Model.cp.email_address" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                     </div>
                 </div>
@@ -176,24 +156,24 @@
                         <div class="form-group">
                             <div class="col-md-12"><strong>Card Type:</strong></div>
                             <div class="col-md-12">
-                                <select id="CreditCardType" asp-for="CreditCardType" class="form-control">
+                                <select id="CreditCardType" asp-for="@Model.cp.CreditCardType" class="form-control">
                                     <option value="5">Visa</option>
                                     <option value="6">MasterCard</option>
                                     <option value="7">American Express</option>
                                     <option value="8">Discover</option>
                                 </select>
-                                <span asp-validation-for="CreditCardType" class="text-danger"></span>
+                                <span asp-validation-for="@Model.cp.CreditCardType" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Credit Card Number:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" asp-for="car_number" value="" /></div>
-                            <span asp-validation-for="car_number" class="text-danger" style="margin-left: 17px;"></span>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_number" value="" /></div>
+                            <span asp-validation-for="@Model.cp.car_number" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Card CVV:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" asp-for="car_code" value="" /></div>
-                            <span asp-validation-for="car_code" class="text-danger" style="margin-left: 17px;"></span>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_code" value="" /></div>
+                            <span asp-validation-for="@Model.cp.car_code" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12">
