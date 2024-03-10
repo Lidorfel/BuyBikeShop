@@ -114,21 +114,41 @@ public static class CartManager
     }
 
 
+    /* public static Cart GetCart(HttpContext httpContext)
+     {
+         string cartId = GetCartId(httpContext);
+         var cart = Carts.GetOrAdd(cartId, _ => new Cart());
+
+         if (string.IsNullOrEmpty(httpContext.User.Identity.Name))
+         {
+             cart.SessionId = cartId; // Set SessionId for guest carts
+         }
+         else
+         {
+             cart.CustomerId = httpContext.User.Identity.Name; // Set CustomerId for authenticated users
+         }
+
+         return cart;
+     }
+ */
+
     public static Cart GetCart(HttpContext httpContext)
     {
-        string cartId = GetCartId(httpContext);
-        var cart = Carts.GetOrAdd(cartId, _ => new Cart());
+        string cartId;
 
-        if (string.IsNullOrEmpty(httpContext.User.Identity.Name))
+        // Check if user is authenticated and has a user-specific cart
+        if (!string.IsNullOrEmpty(httpContext.User.Identity.Name))
         {
-            cart.SessionId = cartId; // Set SessionId for guest carts
+            cartId = httpContext.User.Identity.Name;
         }
         else
         {
-            cart.CustomerId = httpContext.User.Identity.Name; // Set CustomerId for authenticated users
+            // Use existing guest cart ID or generate a new one for guests
+            cartId = httpContext.Session.GetString("CartId") ?? Guid.NewGuid().ToString();
+            httpContext.Session.SetString("CartId", cartId);
         }
 
-        return cart;
+        return Carts.GetOrAdd(cartId, _ => new Cart());
     }
 
 

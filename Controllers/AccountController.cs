@@ -53,6 +53,11 @@ namespace BuyBikeShop.Controllers
         {
             if (ModelState.IsValid)
             {
+                var guestCartId = HttpContext.Session.GetString("CartId");
+                if (!string.IsNullOrEmpty(guestCartId))
+                {
+                    HttpContext.Session.SetString("GuestCartId", guestCartId);
+                }
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if(result.Succeeded)
                 {
@@ -102,8 +107,13 @@ namespace BuyBikeShop.Controllers
         }
         public async Task<IActionResult> Logout()
         {
+            var guestCartId = HttpContext.Session.GetString("GuestCartId");
             await signInManager.SignOutAsync();
             HttpContext.Session.Remove("CartId");
+            if (!string.IsNullOrEmpty(guestCartId))
+            {
+                HttpContext.Session.SetString("CartId", guestCartId);
+            }
             return RedirectToAction("Index", "Home");
 		}
 		[Authorize]
