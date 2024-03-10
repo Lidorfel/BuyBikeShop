@@ -1,6 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using BuyBikeShop.Models;
-using BuyBikeShop.Data; 
+using BuyBikeShop.Data;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Identity;
 
 public static class CartManager
 {
@@ -197,6 +199,75 @@ public static class CartManager
         }
         return cart;
     }
+
+    public static void SaveCartInCookie(Cart cart, HttpContext httpContext, UserManager<Customer> userManager)
+    {
+        string cookieName;
+
+        // Check if the user is authenticated
+        if (httpContext.User.Identity.IsAuthenticated)
+        {
+            // Get the user ID
+            var userId = userManager.GetUserId(httpContext.User);
+
+            // Use the user ID for the cookie name
+            cookieName = $"Cart_User_{userId}";
+        }
+        else
+        {
+            // Use a generic name for the guest cart cookie
+            cookieName = "Cart_Guest";
+        }
+
+        // Serialize the cart object to a JSON string
+        string serializedCart = JsonConvert.SerializeObject(cart);
+
+        // Create the cookie with the serialized cart
+        httpContext.Response.Cookies.Append(cookieName, serializedCart, new CookieOptions
+        {
+            Expires = DateTime.UtcNow.AddDays(7),
+            HttpOnly = true
+        });
+    }
+
+    public static Cart LoadCartFromCookie(HttpContext httpContext, UserManager<Customer> userManager)
+    {
+        Cart cart = null;
+        string serializedCart;
+
+        // Check if the user is authenticated
+        if (httpContext.User.Identity.IsAuthenticated)
+        {
+            // For an authenticated user, try to retrieve the user-specific cart cookie
+            var userId = userManager.GetUserId(httpContext.User);
+            string userCookieName = $"Cart_User_{userId}";
+            serializedCart = httpContext.Request.Cookies[userCookieName];
+        }
+        else
+        {
+            // For a guest, try to retrieve the guest cart cookie
+            serializedCart = httpContext.Request.Cookies["Cart_Guest"];
+        }
+
+        // If a serialized cart is found in the cookie, deserialize it
+        if (!string.IsNullOrEmpty(serializedCart))
+        {
+            try
+            {
+                cart = JsonConvert.DeserializeObject<Cart>(serializedCart);
+            }
+            catch
+            {
+                // Handle potential deserialization errors, log if necessary
+                cart = null;
+            }
+        }
+
+        // Return the deserialized cart or null if not found or deserialization failed
+        return cart ?? new Cart(); // Consider returning a new Cart instead of null to avoid null reference errors elsewhere
+    }
+
+
 
 
 

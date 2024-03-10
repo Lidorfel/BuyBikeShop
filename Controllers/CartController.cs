@@ -33,10 +33,20 @@ public class CartController : Controller
     }*/
 
     [HttpPost]
-    public IActionResult AddToCart(int productId, int quantity)
+    /*public IActionResult AddToCart(int productId, int quantity)
     {
         var cart = CartManager.GetCart(HttpContext);
         CartManager.AddToCart(cart, productId, quantity); // Pass the whole Cart object
+
+        return RedirectToAction("Index", "Product", new { id = productId });
+    }
+*/
+
+    public IActionResult AddToCart(int productId, int quantity)
+    {
+        var cart = CartManager.GetCart(HttpContext);
+        CartManager.AddToCart(cart, productId, quantity);
+        CartManager.SaveCartInCookie(cart, HttpContext,userManager);
 
         return RedirectToAction("Index", "Product", new { id = productId });
     }
@@ -87,9 +97,10 @@ public class CartController : Controller
     [HttpPost]
     public IActionResult RemoveFromCart(int productId)
     {
+        var cart = CartManager.GetCart(HttpContext);
         CartManager.RemoveFromCart(HttpContext, productId);
+        CartManager.SaveCartInCookie(cart, HttpContext, userManager);
 
-        // Redirect back to the cart view or to another appropriate view
         return RedirectToAction("Cart", "CheckOut");
     }
 

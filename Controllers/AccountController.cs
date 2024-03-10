@@ -62,8 +62,15 @@ namespace BuyBikeShop.Controllers
                 if(result.Succeeded)
                 {
                     var user = await userManager.FindByEmailAsync(model.Email);
-                    var userCart = CartManager.GetCartByUserId(user.Id);
-                    HttpContext.Session.SetString("CartId", user.Id.ToString());
+                    var userCart = CartManager.LoadCartFromCookie(HttpContext, userManager); // Load the user's cart from the cookie
+                    if (userCart == null || userCart.CartItems.Count == 0)
+                    {
+                        // If the user's cart is empty or doesn't exist, consider loading a default cart or creating a new one
+                        userCart = new Cart();
+                    }
+                    CartManager.SaveCartInCookie(userCart, HttpContext, userManager); // Save the loaded or new cart back into a cookie
+                    HttpContext.Session.SetString("CartId", user.Id.ToString()); // Set the session cart ID to the user's ID
+
                     await MergeGuestCartToUserCart(model.Email);
                     return RedirectToAction("Index", "Home");
                  
@@ -106,7 +113,10 @@ namespace BuyBikeShop.Controllers
             return View(model);
         }
         public async Task<IActionResult> Logout()
-        {
+        {/*
+            var userCookieName = $"Cart_User_{userManager.GetUserId(User)}";
+            Response.Cookies.Delete(userCookieName);
+
             var guestCartId = HttpContext.Session.GetString("GuestCartId");
             await signInManager.SignOutAsync();
             HttpContext.Session.Remove("CartId");
@@ -114,6 +124,15 @@ namespace BuyBikeShop.Controllers
             {
                 HttpContext.Session.SetString("CartId", guestCartId);
             }
+
+         */
+            var userCookieName = $"Cart_User_{userManager.GetUserId(User)}";
+            // Optionally rename the user-specific cart cookie to a guest cookie instead of deleting
+            // For example, copy the user cart cookie value to a "Cart_Guest" cookie, then delete the user cart cookie
+
+            await signInManager.SignOutAsync();
+            HttpContext.Session.Remove("CartId"); // Clear the session cart ID
+                                                  // If you're renaming the cookie to a guest co
             return RedirectToAction("Index", "Home");
 		}
 		[Authorize]

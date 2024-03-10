@@ -86,16 +86,24 @@ namespace BuyBikeShop.Controllers
         public IActionResult Cart()
         {
             Cart cart;
-            if (User.Identity.IsAuthenticated)
+
+            // Attempt to load the cart from a cookie
+            cart = CartManager.LoadCartFromCookie(HttpContext, userManager);
+
+            // If no cart is found in cookies, get or create a new cart
+            if (cart == null || !cart.CartItems.Any())
             {
-                // For authenticated users, get the cart based on the user's ID
-                var userId = userManager.GetUserId(User);
-                cart = CartManager.GetCart(HttpContext);
-            }
-            else
-            {
-                // For guest users, get the cart based on the session ID
-                cart = CartManager.GetCart(HttpContext);
+                if (User.Identity.IsAuthenticated)
+                {
+                    // For authenticated users, get the cart based on the user's ID
+                    var userId = userManager.GetUserId(User);
+                    cart = CartManager.GetCartByUserId(userId);
+                }
+                else
+                {
+                    // For guest users, get the cart based on the session ID
+                    cart = CartManager.GetCart(HttpContext);
+                }
             }
 
             // Fetch product details for each cart item
@@ -104,12 +112,13 @@ namespace BuyBikeShop.Controllers
                 var product = _context.Products.Find(item.ProductId);
                 if (product != null)
                 {
-                    item.Product = product; // Assuming CartItem has a Product property
+                    item.Product = product; // Ensure each cart item has the latest product details
                 }
             }
 
             return View("Cart", cart);
         }
+
 
 
         [HttpPost]
