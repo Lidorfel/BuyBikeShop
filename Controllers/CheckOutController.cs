@@ -164,14 +164,28 @@ namespace BuyBikeShop.Controllers
                     cust = await userManager.GetUserAsync(User);
                     if (cust != null)
                     {
-                        cust.Street = pay.cp.address.ToString();
-                        cust.City = pay.cp.city.ToString();
-                        cust.Country = pay.cp.country.ToString();
-                        cust.Zip = pay.cp.zip_code.ToString();
-                        cust.CreditCard = pay.cp.car_number.ToString();//must be encrypt
-                        cust.CVV = int.Parse(pay.cp.car_code);//must be encrypt
-                        cust.ExpDate = new DateTime(pay.cp.ExpirationYear, pay.cp.ExpirationMonth, 1);//must be encrypt
-                        _context.Customers.Update(cust);
+                        if (pay.cp.saveDetails)
+                        {
+                            cust.Street = pay.cp.address.ToString();
+                            cust.City = pay.cp.city.ToString();
+                            cust.Country = pay.cp.country.ToString();
+                            cust.Zip = pay.cp.zip_code.ToString();
+                            cust.CreditCard = pay.cp.car_number.ToString();//must be encrypt
+                            cust.CVV = int.Parse(pay.cp.car_code);//must be encrypt
+                            cust.ExpDate = new DateTime(pay.cp.ExpirationYear, pay.cp.ExpirationMonth, 1);//must be encrypt
+                            _context.Customers.Update(cust);
+                        }
+                        else
+                        {
+                            cust.Street = null;
+                            cust.City = null;
+                            cust.Country = null;
+                            cust.Zip = null;
+                            cust.CreditCard = null;//must be encrypt
+                            cust.CVV = null;//must be encrypt
+                            cust.ExpDate = null;//must be encrypt
+                            _context.Customers.Update(cust);
+                        }
 
                     }
                     else
