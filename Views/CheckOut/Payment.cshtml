@@ -94,7 +94,7 @@
                         <div class="form-group">
                             <div class="col-md-12"><strong>Country:</strong></div>
                             <div class="col-md-12">
-                                <input class="form-control" asp-for="@Model.cp.country" value="" />
+                                <input class="form-control" asp-for="@Model.cp.country" value="@currentUser?.Country" />
                                 <span asp-validation-for="@Model.cp.country" class="text-danger"></span>
 
                             </div>
@@ -102,7 +102,7 @@
                         <div class="form-group">
                             <div class="col-md-6 col-xs-12">
                                 <strong>First Name:</strong>
-                                <input type="text" asp-for="@Model.cp.first_name" class="form-control" value="@currentUser?.FName " />
+                                <input type="text" asp-for="@Model.cp.first_name" class="form-control" value="@currentUser?.FName" />
                                 <span asp-validation-for="@Model.cp.first_name" class="text-danger"></span>
                             </div>
                             <div class="span1"></div>
@@ -115,14 +115,14 @@
                         <div class="form-group">
                             <div class="col-md-12"><strong>Address:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" asp-for="@Model.cp.address" class="form-control" value="" />
+                                <input type="text" asp-for="@Model.cp.address" class="form-control" value="@currentUser?.Street" />
                                 <span asp-validation-for="@Model.cp.address" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>City:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" asp-for="@Model.cp.city" class="form-control" value="" />
+                                <input type="text" asp-for="@Model.cp.city" class="form-control" value="@currentUser?.City" />
                                 <span asp-validation-for="@Model.cp.city" class="text-danger"></span>
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                         <div class="form-group">
                             <div class="col-md-12"><strong>Zip / Postal Code:</strong></div>
                             <div class="col-md-12">
-                                <input type="text" asp-for="@Model.cp.zip_code" class="form-control" value="" />
+                                <input type="text" asp-for="@Model.cp.zip_code" class="form-control" value="@currentUser?.Zip" />
                                 <span asp-validation-for="@Model.cp.zip_code" class="text-danger"></span>
                             </div>
                         </div>
@@ -145,6 +145,8 @@
                             <div class="col-md-12"><input type="text" asp-for="@Model.cp.email_address" class="form-control" value="@currentUser?.Email" /></div>
                             <span asp-validation-for="@Model.cp.email_address" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
+
+
                     </div>
                 </div>
                 <!--SHIPPING METHOD END-->
@@ -167,12 +169,12 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Credit Card Number:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_number" value="" /></div>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_number" value="@currentUser?.CreditCard" /></div>
                             <span asp-validation-for="@Model.cp.car_number" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Card CVV:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_code" value="" /></div>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_code" value="@currentUser?.CVV" /></div>
                             <span asp-validation-for="@Model.cp.car_code" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
@@ -210,8 +212,8 @@
                             </div>
                         </div>
 
-                       <input type="hidden" value="@Model.Cart"/>
-
+@*                        <input type="hidden" value="@Model.Cart"/>
+ *@
                         <div class="form-group">
                             <div class="col-md-12">
                                 <span>Pay secure using your credit card.</span>
@@ -225,6 +227,13 @@
                                 <div class="clearfix"></div>
                             </div>
                         </div>
+                        @if (currentUser != null)
+                        {
+                            <div>
+                                <input class="form-check-input" asp-for="@Model.cp.saveDetails" type="checkbox">
+                                <label class="form-check-label" for="saveDetails">Do you want to save your details for next purchase? </label>
+                            </div>
+                        }
                         <div class="form-group">
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <button type="submit" class="btn btn-dark btn-submit-fix" style="background-color: #50C878;">Place Order</button>

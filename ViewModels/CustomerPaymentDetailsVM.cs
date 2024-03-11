@@ -51,6 +51,8 @@ namespace BuyBikeShop.ViewModels
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string email_address { get; set; }
 
+        public bool saveDetails {  get; set; }
+
         //Payment section
 
         [Required(ErrorMessage = "Credit Card Type is required")]

@@ -4,6 +4,8 @@ using BuyBikeShop.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace BuyBikeShop.Controllers
 {
@@ -17,12 +19,8 @@ namespace BuyBikeShop.Controllers
             this.userManager = userManager;
             _context = context;
         }
-
-        [HttpPost]
-        public IActionResult Payment(int productId, int quantity) // CustomerPaymentDetailsVM cp
+        public PaymentVM insertProductsIntoCart(Cart cart)
         {
-            var cart = CartManager.GetCart(HttpContext);
-            CartManager.AddToCart(cart,productId, quantity);
             foreach (var item in cart.CartItems)
             {
                 var product = _context.Products.Find(item.ProductId);
@@ -34,10 +32,26 @@ namespace BuyBikeShop.Controllers
             var payVM = new PaymentVM();
             payVM.Cart = cart;
             payVM.cp = new CustomerPaymentDetailsVM();
+            return payVM;
+        }
+        [HttpGet]
+        public IActionResult Payment()
+        {
+            var cart = CartManager.GetCart(HttpContext);
+            if (cart.CartItems.Count==0)
+            {
+                return NotFound();
+            }
+            var payVM = insertProductsIntoCart(cart);
+            return View("Payment", payVM);
+        }
 
-
-            // Perform any additional logic you need
-
+        [HttpPost]
+        public IActionResult Payment(int productId, int quantity) // CustomerPaymentDetailsVM cp
+        {
+            var cart = CartManager.GetCart(HttpContext);
+            CartManager.AddToCart(cart,productId, quantity);
+            var payVM = insertProductsIntoCart(cart);
             return View("Payment",payVM); 
         }
         [HttpGet]
@@ -45,12 +59,12 @@ namespace BuyBikeShop.Controllers
         public IActionResult CartPayment()
         {
             var cart = CartManager.GetCart(HttpContext);
-            var payVM = new PaymentVM();
-            payVM.Cart = cart;
-            payVM.cp = new CustomerPaymentDetailsVM();
-
+            if (cart.CartItems.Count == 0)
+            {
+                return NotFound();
+            }
+            var payVM = insertProductsIntoCart(cart);
             return View("Payment", payVM);
-
         }
 
 
@@ -113,7 +127,6 @@ namespace BuyBikeShop.Controllers
 
         public IActionResult ConfirmPurchase()
         {
-
             var orderNum = TempData["OrderNumber"] as string;
             return View("ConfirmPurchase",orderNum);
         }
@@ -121,101 +134,74 @@ namespace BuyBikeShop.Controllers
         [HttpPost]
         public async Task <IActionResult> CreateOrder(PaymentVM pay)
         {
-            Customer cust = null;
-            string customerName = pay.cp.first_name;
-            if (User.Identity.IsAuthenticated)
-            {
-                cust = await userManager.GetUserAsync(User); 
-                if (cust != null)
+            Debug.WriteLine(pay.cp.saveDetails.ToString());
+            try
+            { 
+                Customer cust = null;
+                string customerName = pay.cp.first_name;
+                List<OrderProduct> OrderProductsList = new List<OrderProduct>();
+                var cart = CartManager.GetCart(HttpContext);
+                foreach (var item in cart.CartItems)
                 {
-                    cust.Street = pay.cp.address.ToString();
-                    cust.City = pay.cp.city.ToString();
-                    cust.Country = pay.cp.country.ToString();
-                    cust.Zip = pay.cp.zip_code.ToString();
-                    cust.CreditCard = pay.cp.car_number.ToString();//must be encrypt
-                    cust.CVV = int.Parse(pay.cp.car_code);//must be encrypt
-                    cust.ExpDate = new DateTime(pay.cp.ExpirationYear, pay.cp.ExpirationMonth, 1);//must be encrypt
-                    _context.Customers.Update(cust);
-
-            }
-            else
-                {
-                    NotFound();
-                }
-            }
-
-            List<OrderProduct> OrderProductsList = new List<OrderProduct>();
-            var cart = CartManager.GetCart(HttpContext);
-            foreach(var item in cart.CartItems)
-            {
-                OrderProductsList.Add(new OrderProduct
-                {
-                    Product = item.Product,
-                    Quantity = item.Quantity,
-                    UnitPrice = Math.Floor(item.Product.Price * (1 - (item.Product.Sale_Perc / 100.0)))
-                });
-            }
-            Order order = new Order
-            {
-                OrderDate = DateTime.Now,
-                CustomerId = cust != null ? cust.Id : null,
-                CustomerName = customerName,
-                OrderProducts = OrderProductsList,
-            };
-            _context.Orders.Add(order);
-            foreach (var item in cart.CartItems)
-                {
-                    var pr = _context.Products.FirstOrDefault(i => i.Id == item.ProductId);
-                    if (pr != null)
+                    var pr = _context.Products.FirstOrDefault(i=>i.Id==item.ProductId);
+                    if (pr!.Quantity < item.Quantity)
                     {
-                        pr.Quantity -= item.Quantity;
-                        _context.Products.Update(pr);
+                        throw new Exception(pr!.Title +"&" + pr!.Id);
+                    }
+                    OrderProductsList.Add(new OrderProduct
+                    {
+                        Product = pr,
+                        Quantity = item.Quantity,
+                        UnitPrice = Math.Floor(item.Product.Price * (1 - (item.Product.Sale_Perc / 100.0)))
+                    });
+                    pr.Quantity -= item.Quantity;
+                    _context.Products.Update(pr);
+
+                }
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    cust = await userManager.GetUserAsync(User);
+                    if (cust != null)
+                    {
+                        cust.Street = pay.cp.address.ToString();
+                        cust.City = pay.cp.city.ToString();
+                        cust.Country = pay.cp.country.ToString();
+                        cust.Zip = pay.cp.zip_code.ToString();
+                        cust.CreditCard = pay.cp.car_number.ToString();//must be encrypt
+                        cust.CVV = int.Parse(pay.cp.car_code);//must be encrypt
+                        cust.ExpDate = new DateTime(pay.cp.ExpirationYear, pay.cp.ExpirationMonth, 1);//must be encrypt
+                        _context.Customers.Update(cust);
 
                     }
+                    else
+                    {
+                        NotFound();
+                    }
                 }
-            await _context.SaveChangesAsync();
-            if (User.Identity.IsAuthenticated)
-            {
-                TempData["OrderNumber"] = order.OrderId.ToString();
+                Order order = new Order
+                {
+                    OrderDate = DateTime.Now,
+                    CustomerId = cust != null ? cust.Id : null,
+                    CustomerName = customerName,
+                    OrderProducts = OrderProductsList,
+                };
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync();
+                if (User.Identity.IsAuthenticated)
+                {
+                    TempData["OrderNumber"] = order.OrderId.ToString();
+                }
+                CartManager.ResetCart(CartManager.GetCart(HttpContext));
+                return ConfirmPurchase();
             }
-            CartManager.ResetCart(CartManager.GetCart(HttpContext));
-            return ConfirmPurchase();
-
+            catch (Exception ex)
+            {
+                string[] values = ex.Message.Split("&");
+                TempData["OrderNumber"] = "Sorry, there is not enough stock in this Product : " + values[0];
+                CartManager.RemoveFromCart(HttpContext, int.Parse(values[1]));
+                return ConfirmPurchase();
+            }
         }
-
-
-
-
-        //Validation
-        //public async Task<IActionResult> PlaceOrderPress(RegisterVM model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        //Customer cust = new Customer
-        //        //{
-        //        //    FName = Utils.CapitalizeFirstLetter(model.FName!),
-        //        //    LName = Utils.CapitalizeFirstLetter(model.LName!),
-        //        //    Phone = model.Phone!,
-        //        //    Birthdate = model.Birthdate,
-        //        //    Email = model.Email,
-        //        //    UserName = model.Email
-        //        //};
-
-        //        var result = await userManager.CreateAsync(cust, model.Password!);
-        //        if (result.Succeeded)
-        //        {
-        //            await signInManager.SignInAsync(cust, false);
-        //            return RedirectToAction("Index", "Home");
-
-        //        }
-        //        foreach (var error in result.Errors)
-        //        {
-        //            ModelState.AddModelError("", error.Description);
-        //        }
-        //    }
-        //    return View(model);
-        //}
-
-
     }
 }
