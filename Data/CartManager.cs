@@ -130,6 +130,13 @@ public static class CartManager
 
         return cart;
     }
+    public static void ResetCart(Cart c)
+    {
+        if (c.CartItems.Count>0)
+        {
+            c.CartItems = new List<CartItem>();
+        }
+    }
 
 
     private static string GetCartId(HttpContext httpContext)
