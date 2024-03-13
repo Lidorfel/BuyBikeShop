@@ -30,25 +30,16 @@ namespace BuyBikeShop.Controllers
             {
                 searchBar = searchBar.ToLower();
                 string[] keyWords = searchBar.Split();
-                if (keyWords.Length > 3)
+                keyWords = keyWords.Take(4).ToArray();
+                foreach (string word in keyWords)
                 {
-                    products = products.Where(p => p.Class_Name.ToString().ToLower().Contains(searchBar)
-                || p.Sub_Class.ToString().ToLower().Contains(searchBar)
-                || p.Title.ToString().ToLower().Contains(searchBar)
-                || p.Color.ToString().ToLower().Contains(searchBar)
-                );
+                    products = products.Where(p => p.Class_Name.ToString().ToLower().Contains(word)
+                    || p.Sub_Class.ToString().ToLower().Contains(word)
+                    || p.Title.ToString().ToLower().Contains(word)
+                    || p.Color.ToString().ToLower().Contains(word)
+                    );
                 }
-                else
-                {
-                    foreach (string word in keyWords)
-                    {
-                        products = products.Where(p => p.Class_Name.ToString().ToLower().Contains(word)
-                        || p.Sub_Class.ToString().ToLower().Contains(word)
-                        || p.Title.ToString().ToLower().Contains(word)
-                        || p.Color.ToString().ToLower().Contains(word)
-                        );
-                    }
-                }
+                
             }
             await products.ToListAsync();
             return View("Index", products);

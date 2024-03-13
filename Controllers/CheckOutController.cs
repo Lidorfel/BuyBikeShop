@@ -134,7 +134,6 @@ namespace BuyBikeShop.Controllers
         [HttpPost]
         public async Task <IActionResult> CreateOrder(PaymentVM pay)
         {
-            Debug.WriteLine(pay.cp.saveDetails.ToString());
             try
             { 
                 Customer cust = null;
