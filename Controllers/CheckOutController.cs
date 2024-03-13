@@ -37,6 +37,16 @@ namespace BuyBikeShop.Controllers
         [HttpGet]
         public IActionResult Payment()
         {
+            TempData["DecryptedCreditNumber"] = "";
+            TempData["DecryptedCVV"] = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = userManager.GetUserId(User);
+                var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+            }
             var cart = CartManager.GetCart(HttpContext);
             if (cart.CartItems.Count==0)
             {
@@ -49,6 +59,16 @@ namespace BuyBikeShop.Controllers
         [HttpPost]
         public IActionResult Payment(int productId, int quantity) // CustomerPaymentDetailsVM cp
         {
+            TempData["DecryptedCreditNumber"] = "";
+            TempData["DecryptedCVV"] = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = userManager.GetUserId(User);
+                var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+            }
             var cart = CartManager.GetCart(HttpContext);
             CartManager.AddToCart(cart,productId, quantity);
             var payVM = insertProductsIntoCart(cart);
@@ -58,6 +78,16 @@ namespace BuyBikeShop.Controllers
 
         public IActionResult CartPayment()
         {
+            TempData["DecryptedCreditNumber"] = "";
+            TempData["DecryptedCVV"] = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = userManager.GetUserId(User);
+                var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+            }
             var cart = CartManager.GetCart(HttpContext);
             if (cart.CartItems.Count == 0)
             {
@@ -169,9 +199,10 @@ namespace BuyBikeShop.Controllers
                             cust.City = pay.cp.city.ToString();
                             cust.Country = pay.cp.country.ToString();
                             cust.Zip = pay.cp.zip_code.ToString();
-                            cust.CreditCard = pay.cp.car_number.ToString();//must be encrypt
-                            cust.CVV = int.Parse(pay.cp.car_code);//must be encrypt
-                            cust.ExpDate = new DateTime(pay.cp.ExpirationYear, pay.cp.ExpirationMonth, 1);//must be encrypt
+                            cust.CreditCard = ManageAES.Encrypt(pay.cp.car_number.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());//must be encrypt
+                            cust.CVV = ManageAES.Encrypt(pay.cp.car_code.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());//must be encrypt
+                            cust.ExpDate = ManageAES.Encrypt((pay.cp.ExpirationMonth + "/" + pay.cp.ExpirationYear), KeyManager.LoadKey(), KeyManager.LoadIV());
+                            //must be encrypt
                             _context.Customers.Update(cust);
                         }
                         else
@@ -198,6 +229,7 @@ namespace BuyBikeShop.Controllers
                     CustomerId = cust != null ? cust.Id : null,
                     CustomerName = customerName,
                     OrderProducts = OrderProductsList,
+                    Status="Order Placed"
                 };
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();

@@ -169,12 +169,12 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Credit Card Number:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_number" value="@currentUser?.CreditCard" /></div>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_number" value=@TempData["DecryptedCreditNumber"] /></div>
                             <span asp-validation-for="@Model.cp.car_number" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12"><strong>Card CVV:</strong></div>
-                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_code" value="@currentUser?.CVV" /></div>
+                            <div class="col-md-12"><input type="text" class="form-control" asp-for="@Model.cp.car_code" value=@TempData["DecryptedCVV"] /></div>
                             <span asp-validation-for="@Model.cp.car_code" class="text-danger" style="margin-left: 17px;"></span>
                         </div>
                         <div class="form-group">
