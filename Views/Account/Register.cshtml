@@ -1,4 +1,5 @@
 ﻿@using BuyBikeShop.ViewModels
+@using System.ComponentModel.DataAnnotations
 @model RegisterVM
 
 @{
@@ -13,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        /* CSS for background image */
+        /* background image */
         body {
             background-image: url('your-image-url.jpg'); /* Replace 'your-image-url.jpg' with the path to your image */
             background-size: cover;
@@ -21,7 +22,7 @@
             background-repeat: no-repeat;
         }
 
-        /* Rest of your CSS styles */
+        /*CSS styles */
         .login-button {
             height: 50px;
             width: 135px;
@@ -94,7 +95,7 @@
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="mb-1">
-                    <label asp-for="FName" class="control-label">First Name</label>
+                    <label class="control-label">First Name</label>
                     <input asp-for="FName" class="form-control" />
                     <span asp-validation-for="FName" class="text-danger"></span>
                 </div>
@@ -111,8 +112,10 @@
                 <div class="mb-1">
                     <label asp-for="Birthdate" class="control-label">Birth Date</label>
                     <input asp-for="Birthdate" class="form-control" />
-                    <span asp-validation-for="Birthdate" class="text-danger"></span>
+                    <span asp-validation-for="Birthdate" class="text-danger" data-valmsg-for="Birthdate" data-valmsg-replace="true"></span>
+
                 </div>
+
                 <div class="mb-1">
                     <label asp-for="Password" class="control-label"></label>
                     <input asp-for="Password" class="form-control" />
