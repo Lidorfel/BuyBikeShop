@@ -24,7 +24,7 @@ namespace BuyBikeShop.ViewModels
 
         [Required(ErrorMessage = "Address is required")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "Address should be between 2 - 20 letters.")]
-        [RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "Address must contain only letters")]
+        //[RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "Address must contain only letters")]
         public string address { get; set; }
 
         [Required(ErrorMessage = "City is required")]
