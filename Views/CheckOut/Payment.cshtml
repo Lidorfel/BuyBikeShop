@@ -195,6 +195,7 @@
                                     <option value="11">11</option>
                                     <option value="12">12</option>
                                 </select>
+                                <span asp-validation-for="@Model.cp.ExpirationMonth" class="text-danger"></span>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                 <select class="form-control" asp-for=@Model.cp.ExpirationYear >
@@ -207,32 +208,15 @@
                                     <option value="2028">2029</option>
                                     <option value="2030">2030</option>
                                 </select>
+                                <span asp-validation-for="@Model.cp.ExpirationYear" class="text-danger"></span>
                             </div>
                         </div>
-
                        <input type="hidden" value="@Model.Cart"/>
-
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                <span>Pay secure using your credit card.</span>
-                            </div>
-                            <div class="col-md-12">
-                                <ul class="cards">
-                                    <li class="visa hand">Visa</li>
-                                    <li class="mastercard hand">MasterCard</li>
-                                    <li class="amex hand">Amex</li>
-                                </ul>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
                         <div class="form-group">
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <button type="submit" class="btn btn-dark btn-submit-fix" style="background-color: #50C878;">Place Order</button>
                             </div>
                         </div>
-
-                    
-
                     </div>
                 </div>
                 <!--CREDIT CART PAYMENT END-->

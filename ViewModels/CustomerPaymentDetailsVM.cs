@@ -8,7 +8,7 @@ namespace BuyBikeShop.ViewModels
     {
         public CustomerPaymentDetailsVM()
         {
-            
+
 
         }
 
@@ -24,7 +24,11 @@ namespace BuyBikeShop.ViewModels
 
         [Required(ErrorMessage = "Address is required")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "Address should be between 2 - 20 letters.")]
+
         //[RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "Address must contain only letters")]
+
+        //[RegularExpression(@"^[A-Za-z\s]*$", ErrorMessage = "Address must contain only letters")] if want to allow adress with numbers
+
         public string address { get; set; }
 
         [Required(ErrorMessage = "City is required")]
@@ -42,7 +46,7 @@ namespace BuyBikeShop.ViewModels
         [RegularExpression(@"^\d{5}$", ErrorMessage = "Zip Code must be exactly 5 digits.")]
         public string zip_code { get; set; }
 
-        [Required(ErrorMessage =    "   Phone Number is required")]
+        [Required(ErrorMessage = "   Phone Number is required")]
         [RegularExpression(@"^05\d{8}$", ErrorMessage = "Phone Number must start with '05' and consist of another 8 digits.")]
         public string phone_number { get; set; }
 
@@ -65,74 +69,60 @@ namespace BuyBikeShop.ViewModels
         public string car_code { get; set; }
 
         [Required(ErrorMessage = "Expiration Month is required")]
-        [FutureMonth(ErrorMessage = "Expiration Month must be in the future")]
-        public int ExpirationMonth { get; set; }
+        //[FutureMonth(ErrorMessage = "Expiration Month must be in the future")]
+        public int ExpirationMonth { get; set; } // when string gives build rror in checkout controller when int can't pars
 
-        
         [Required(ErrorMessage = "Expiration Year is required")]
-        [FutureYear(ErrorMessage = "Expiration Year must be in the future")]
-        public int ExpirationYear { get; set; }
-
-
-        //public string successMessage = "";
-        //public string errorMessage = "";
-        //public void OnGet() { }
-        //public void OnPost()
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        errorMessage = "Data Validation failed";
-        //        return;
-        //    }
-
-        //    successMessage = "Your Order has been placed.";
-        //}
-
+        //[FutureYear(ErrorMessage = "Expiration Year must be in the future")]
+        public int ExpirationYear { get; set; } // when string gives build error in checkout controller when int can't pars
     }
 
-    public class FutureMonthAttribute : ValidationAttribute
-    {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            string month = value?.ToString();
-            int currentYear = DateTime.Now.Year;
-            int currentMonth = DateTime.Now.Month;
+    //public class FutureMonthAttribute : ValidationAttribute
+    //{
+    //    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    //    {
+    //        string selectedMonthString = value as string;
+    //        if (int.TryParse(selectedMonthString, out int selectedMonth))
+    //        {
+    //            int currentYear = DateTime.Now.Year;
+    //            int currentMonth = DateTime.Now.Month;
 
-            // Cast validationContext.ObjectInstance to CustomerPaymentDetailsVM
-            var paymentDetails = (CustomerPaymentDetailsVM)validationContext.ObjectInstance;
+    //            // Cast validationContext.ObjectInstance to CustomerPaymentDetailsVM
+    //            var paymentDetails = (CustomerPaymentDetailsVM)validationContext.ObjectInstance;
 
-            if (!string.IsNullOrEmpty(month))
-            {
-                int selectedMonth;
-                if (int.TryParse(month, out selectedMonth))
-                {
-                    // Access ExpirationYear property from paymentDetails
-                    if (currentYear <= paymentDetails.ExpirationYear && selectedMonth < currentMonth)
-                    {
-                        return new ValidationResult("Expiration Month must be in the future.");
-                    }
-                }
-            }
+    //            if (selectedMonth >= 1 && selectedMonth <= 12)
+    //            {
+    //                if (int.TryParse(paymentDetails.ExpirationYear, out int expirationYear))
+    //                {
+    //                    if (expirationYear > currentYear || (expirationYear == currentYear && selectedMonth >= currentMonth))
+    //                    {
+    //                        return ValidationResult.Success;
+    //                    }
+    //                }
+    //            }
+    //        }
 
-            return ValidationResult.Success;
-        }
-    }
+    //        return new ValidationResult("Expiration Month must be in the future.");
+    //    }
+    //}
 
-    public class FutureYearAttribute : ValidationAttribute
-    {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            int year = (int)value;
-            int currentYear = DateTime.Now.Year;
+    //public class FutureYearAttribute : ValidationAttribute
+    //{
+    //    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    //    {
+    //        string selectedYearString = value as string;
+    //        if (int.TryParse(selectedYearString, out int selectedYear))
+    //        {
+    //            int currentYear = DateTime.Now.Year;
 
-            if (year < currentYear)
-            {
-                return new ValidationResult("Expiration Year must be in the future.");
-            }
+    //            if (selectedYear >= currentYear)
+    //            {
+    //                return ValidationResult.Success;
+    //            }
+    //        }
 
-            return ValidationResult.Success;
-        }
-    }
-
+    //        return new ValidationResult("Expiration Year must be in the future.");
+    //    }
+    //}
 
 }
