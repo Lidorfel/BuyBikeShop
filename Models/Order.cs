@@ -24,5 +24,7 @@
                 return OrderProducts.Sum(op => op.Quantity * op.UnitPrice);
             }
         }
+        public string? Status { get; set; }
+
     }
 }

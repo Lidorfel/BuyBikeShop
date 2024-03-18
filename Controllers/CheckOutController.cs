@@ -4,6 +4,8 @@ using BuyBikeShop.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace BuyBikeShop.Controllers
 {
@@ -17,12 +19,8 @@ namespace BuyBikeShop.Controllers
             this.userManager = userManager;
             _context = context;
         }
-
-        [HttpPost]
-        public IActionResult Payment(int productId, int quantity) // CustomerPaymentDetailsVM cp
+        public PaymentVM insertProductsIntoCart(Cart cart)
         {
-            var cart = CartManager.GetCart(HttpContext);
-            CartManager.AddToCart(cart,productId, quantity);
             foreach (var item in cart.CartItems)
             {
                 var product = _context.Products.Find(item.ProductId);
@@ -34,23 +32,69 @@ namespace BuyBikeShop.Controllers
             var payVM = new PaymentVM();
             payVM.Cart = cart;
             payVM.cp = new CustomerPaymentDetailsVM();
+            return payVM;
+        }
+        [HttpGet]
+        public IActionResult Payment()
+        {
+            TempData["DecryptedCreditNumber"] = "";
+            TempData["DecryptedCVV"] = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = userManager.GetUserId(User);
+                var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+            }
+            var cart = CartManager.GetCart(HttpContext);
+            if (cart.CartItems.Count==0)
+            {
+                return NotFound();
+            }
+            var payVM = insertProductsIntoCart(cart);
+            return View("Payment", payVM);
+        }
 
-
-            // Perform any additional logic you need
-
+        [HttpPost]
+        public IActionResult Payment(int productId, int quantity) // CustomerPaymentDetailsVM cp
+        {
+            TempData["DecryptedCreditNumber"] = "";
+            TempData["DecryptedCVV"] = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = userManager.GetUserId(User);
+                var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+            }
+            var cart = CartManager.GetCart(HttpContext);
+            CartManager.AddToCart(cart,productId, quantity);
+            var payVM = insertProductsIntoCart(cart);
             return View("Payment",payVM); 
         }
         [HttpGet]
 
         public IActionResult CartPayment()
         {
+            TempData["DecryptedCreditNumber"] = "";
+            TempData["DecryptedCVV"] = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = userManager.GetUserId(User);
+                var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
+                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+            }
             var cart = CartManager.GetCart(HttpContext);
-            var payVM = new PaymentVM();
-            payVM.Cart = cart;
-            payVM.cp = new CustomerPaymentDetailsVM();
-
+            if (cart.CartItems.Count == 0)
+            {
+                return NotFound();
+            }
+            var payVM = insertProductsIntoCart(cart);
             return View("Payment", payVM);
-
         }
 
 
@@ -111,43 +155,73 @@ namespace BuyBikeShop.Controllers
             return View("Cart", cart);
         }
 
+        public IActionResult ConfirmPurchase()
+        {
+            var orderNum = TempData["OrderNumber"] as string;
+            return View("ConfirmPurchase",orderNum);
+        }
 
         [HttpPost]
         public async Task <IActionResult> CreateOrder(PaymentVM pay)
         {
+            try
+            { 
                 Customer cust = null;
                 string customerName = pay.cp.first_name;
-                if (User.Identity.IsAuthenticated)
-                {
-                    cust = await userManager.GetUserAsync(User); 
-                    if (cust != null)
-                    {
-                        cust.Street = pay.cp.address.ToString();
-                        cust.City = pay.cp.city.ToString();
-                        cust.Country = pay.cp.country.ToString();
-                        cust.Zip = pay.cp.zip_code.ToString();
-                        cust.CreditCard = pay.cp.car_number.ToString();//must be encrypt
-                        cust.CVV = int.Parse(pay.cp.car_code);//must be encrypt
-                        cust.ExpDate = new DateTime(pay.cp.ExpirationYear, pay.cp.ExpirationMonth, 1);//must be encrypt
-                        _context.Customers.Update(cust);
-
-                }
-                else
-                    {
-                        NotFound();
-                    }
-                }
-
                 List<OrderProduct> OrderProductsList = new List<OrderProduct>();
                 var cart = CartManager.GetCart(HttpContext);
-                foreach(var item in cart.CartItems)
+                foreach (var item in cart.CartItems)
                 {
+                    var pr = _context.Products.FirstOrDefault(i=>i.Id==item.ProductId);
+                    if (pr!.Quantity < item.Quantity)
+                    {
+                        throw new Exception(pr!.Title +"&" + pr!.Id);
+                    }
                     OrderProductsList.Add(new OrderProduct
                     {
-                        Product = item.Product,
+                        Product = pr,
                         Quantity = item.Quantity,
                         UnitPrice = Math.Floor(item.Product.Price * (1 - (item.Product.Sale_Perc / 100.0)))
                     });
+                    pr.Quantity -= item.Quantity;
+                    _context.Products.Update(pr);
+
+                }
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    cust = await userManager.GetUserAsync(User);
+                    if (cust != null)
+                    {
+                        if (pay.cp.saveDetails)
+                        {
+                            cust.Street = pay.cp.address.ToString();
+                            cust.City = pay.cp.city.ToString();
+                            cust.Country = pay.cp.country.ToString();
+                            cust.Zip = pay.cp.zip_code.ToString();
+                            cust.CreditCard = ManageAES.Encrypt(pay.cp.car_number.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());//must be encrypt
+                            cust.CVV = ManageAES.Encrypt(pay.cp.car_code.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());//must be encrypt
+                            cust.ExpDate = ManageAES.Encrypt((pay.cp.ExpirationMonth + "/" + pay.cp.ExpirationYear), KeyManager.LoadKey(), KeyManager.LoadIV());
+                            //must be encrypt
+                            _context.Customers.Update(cust);
+                        }
+                        else
+                        {
+                            cust.Street = null;
+                            cust.City = null;
+                            cust.Country = null;
+                            cust.Zip = null;
+                            cust.CreditCard = null;//must be encrypt
+                            cust.CVV = null;//must be encrypt
+                            cust.ExpDate = null;//must be encrypt
+                            _context.Customers.Update(cust);
+                        }
+
+                    }
+                    else
+                    {
+                        NotFound();
+                    }
                 }
                 Order order = new Order
                 {
@@ -155,58 +229,24 @@ namespace BuyBikeShop.Controllers
                     CustomerId = cust != null ? cust.Id : null,
                     CustomerName = customerName,
                     OrderProducts = OrderProductsList,
+                    Status="Order Placed"
                 };
                 _context.Orders.Add(order);
-                foreach (var item in cart.CartItems)
-                    {
-                        var pr = _context.Products.FirstOrDefault(i => i.Id == item.ProductId);
-                        if (pr != null)
-                        {
-                            pr.Quantity -= item.Quantity;
-                            _context.Products.Update(pr);
-
-                        }
-                    }
                 await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index","Home");
-
+                if (User.Identity.IsAuthenticated)
+                {
+                    TempData["OrderNumber"] = order.OrderId.ToString();
+                }
+                CartManager.ResetCart(CartManager.GetCart(HttpContext));
+                return ConfirmPurchase();
+            }
+            catch (Exception ex)
+            {
+                string[] values = ex.Message.Split("&");
+                TempData["OrderNumber"] = "Sorry, there is not enough stock in this Product : " + values[0];
+                CartManager.RemoveFromCart(HttpContext, int.Parse(values[1]));
+                return ConfirmPurchase();
+            }
         }
-
-
-
-
-
-        //Validation
-        //public async Task<IActionResult> PlaceOrderPress(RegisterVM model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        //Customer cust = new Customer
-        //        //{
-        //        //    FName = Utils.CapitalizeFirstLetter(model.FName!),
-        //        //    LName = Utils.CapitalizeFirstLetter(model.LName!),
-        //        //    Phone = model.Phone!,
-        //        //    Birthdate = model.Birthdate,
-        //        //    Email = model.Email,
-        //        //    UserName = model.Email
-        //        //};
-
-        //        var result = await userManager.CreateAsync(cust, model.Password!);
-        //        if (result.Succeeded)
-        //        {
-        //            await signInManager.SignInAsync(cust, false);
-        //            return RedirectToAction("Index", "Home");
-
-        //        }
-        //        foreach (var error in result.Errors)
-        //        {
-        //            ModelState.AddModelError("", error.Description);
-        //        }
-        //    }
-        //    return View(model);
-        //}
-
-
     }
 }
