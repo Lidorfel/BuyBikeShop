@@ -182,33 +182,46 @@
                                 <strong>Expiration Date</strong>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                <select class="form-control" asp-for=@Model.cp.ExpirationMonth>
+                                <select class="form-control" id="monthSelect" asp-for=@Model.cp.ExpirationMonth>
                                     <option value="">Month</option>
-                                    <option value="01">01</option>
-                                    <option value="02">02</option>
-                                    <option value="03">03</option>
-                                    <option value="04">04</option>
-                                    <option value="05">05</option>
-                                    <option value="06">06</option>
-                                    <option value="07">07</option>
-                                    <option value="08">08</option>
-                                    <option value="09">09</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
+                                    @{
+                                        List<string> months = new List<string> { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
+                                        foreach (var month in months)
+                                        {
+                                            if (TempData["MonthOfCard"].ToString() == month)
+                                            {
+                                                
+                                                <option value="@month" selected>@month</option>
+                                            }
+                                            else
+                                            {
+                                                
+                                                <option value="@month">@month</option>
+                                            }
+                                        }
+                                    }
                                 </select>
                                 <span asp-validation-for="@Model.cp.ExpirationMonth" class="text-danger"></span>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                <select class="form-control" asp-for=@Model.cp.ExpirationYear >
+                                <select class="form-control" id="yearSelect" asp-for=@Model.cp.ExpirationYear >
                                     <option value="">Year</option>
-                                    <option value="2024">2024</option>
-                                    <option value="2025">2025</option>
-                                    <option value="2026">2026</option>
-                                    <option value="2027">2027</option>
-                                    <option value="2028">2028</option>
-                                    <option value="2028">2029</option>
-                                    <option value="2030">2030</option>
+                                    @{
+                                        List<string> years = new List<string> { "2024", "2025", "2026", "2027", "2028", "2029", "2030"};
+                                        foreach (var year in years)
+                                        {
+                                            if (TempData["YearOfCard"].ToString() == year)
+                                            {
+
+                                                <option value="@year" selected>@year</option>
+                                            }
+                                            else
+                                            {
+
+                                                <option value="@year">@year</option>
+                                            }
+                                        }
+                                    }
                                 </select>
                                 <span asp-validation-for="@Model.cp.ExpirationYear" class="text-danger"></span>
                             </div>
@@ -259,6 +272,14 @@
     }
 
     <script>
+
+
+        $(document).ready(function () {
+            
+            $('#yearSelect, #monthSelect').on('change', function () {
+                validateExpirationDate();
+            });
+        });
         // Get the current year and month
         var currentDate = new Date();
         var currentYear = currentDate.getFullYear();
@@ -267,18 +288,26 @@
         // Add change event listeners to the select elements
         document.getElementById('ExpirationMonth').addEventListener('change', validateExpirationDate);
         document.getElementById('ExpirationYear').addEventListener('change', validateExpirationDate);
+        console.log("outside the function");
 
         // Function to validate the selected expiration date
         function validateExpirationDate() {
-            var selectedYear = parseInt(document.getElementById('ExpirationYear').value);
-            var selectedMonth = parseInt(document.getElementById('ExpirationMonth').value);
+            console.log("inside the function");
 
-            if (selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth)) {
+            var selectedYear = parseInt(document.getElementById('yearSelect').value);
+            var selectedMonth = parseInt(document.getElementById('monthSelect').value);
+            console.log(typeof selectedYear);
+
+
+            if (selectedYear < currentYear || (selectedYear == currentYear && selectedMonth <= currentMonth)) {
+                console.log("inside the function inside the if");
+                console.log(typeof selectedYear);
                 alert('Please select a future expiration date.');
                 // Clear the selected expiration date
-                document.getElementById('ExpirationMonth').selectedIndex = 0;
-                document.getElementById('ExpirationYear').selectedIndex = 0;
+                document.getElementById('yearSelect').selectedIndex = 0;
+                document.getElementById('monthSelect').selectedIndex = 0;
             }
         }
     </script>
+
 }

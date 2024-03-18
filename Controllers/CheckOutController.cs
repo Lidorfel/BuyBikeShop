@@ -39,13 +39,21 @@ namespace BuyBikeShop.Controllers
         {
             TempData["DecryptedCreditNumber"] = "";
             TempData["DecryptedCVV"] = "";
+            TempData["MonthOfCard"] = "";
+            TempData["YearOfCard"] = "";
             if (User.Identity.IsAuthenticated)
             {
                 var userId = userManager.GetUserId(User);
                 var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
-                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
-                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
-                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                if (user.CreditCard != null)
+                {
+                    TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                    TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                    string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                    string[] values = exp.Split("/");
+                    TempData["MonthOfCard"] = int.Parse(values[0]) >= 10 ? values[0] : "0" + values[0];
+                    TempData["YearOfCard"] = values[1];
+                }
             }
             var cart = CartManager.GetCart(HttpContext);
             if (cart.CartItems.Count==0)
@@ -61,13 +69,21 @@ namespace BuyBikeShop.Controllers
         {
             TempData["DecryptedCreditNumber"] = "";
             TempData["DecryptedCVV"] = "";
+            TempData["MonthOfCard"] = "";
+            TempData["YearOfCard"] = "";
             if (User.Identity.IsAuthenticated)
             {
                 var userId = userManager.GetUserId(User);
                 var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
-                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
-                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
-                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                if (user.CreditCard != null)
+                {
+                    TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                    TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                    string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
+                    string[] values = exp.Split("/");
+                    TempData["MonthOfCard"] = int.Parse(values[0])>=10 ? values[0] : "0"+values[0] ;
+                    TempData["YearOfCard"] = values[1];
+                }
             }
             var cart = CartManager.GetCart(HttpContext);
             CartManager.AddToCart(cart,productId, quantity);
@@ -78,23 +94,7 @@ namespace BuyBikeShop.Controllers
 
         public IActionResult CartPayment()
         {
-            TempData["DecryptedCreditNumber"] = "";
-            TempData["DecryptedCVV"] = "";
-            if (User.Identity.IsAuthenticated)
-            {
-                var userId = userManager.GetUserId(User);
-                var user = _context.Customers.FirstOrDefault(x => x.Id == userId);
-                TempData["DecryptedCreditNumber"] = ManageAES.Decrypt(user.CreditCard.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
-                TempData["DecryptedCVV"] = ManageAES.Decrypt(user.CVV.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
-                string exp = ManageAES.Decrypt(user.ExpDate.ToString(), KeyManager.LoadKey(), KeyManager.LoadIV());
-            }
-            var cart = CartManager.GetCart(HttpContext);
-            if (cart.CartItems.Count == 0)
-            {
-                return NotFound();
-            }
-            var payVM = insertProductsIntoCart(cart);
-            return View("Payment", payVM);
+            return Payment();
         }
 
 
