@@ -25,29 +25,7 @@ namespace BuyBikeShop.Controllers
         {
             return View();
         }
-        private async Task MergeGuestCartToUserCart(string userEmail)
-        {
-            // Assuming GetCartByUserId fetches the user's cart from the database or session
-            var userCart = CartManager.GetCartByUserId(userEmail);
 
-            // Retrieve the guest cart from the session
-            var sessionCartId = HttpContext.Session.GetString("CartId");
-            if (!string.IsNullOrEmpty(sessionCartId) && sessionCartId != userEmail)
-            {
-                var guestCart = CartManager.GetCartBySessionId(sessionCartId);
-
-                // Merge logic here: Transfer items from guestCart to userCart
-                // This might involve adding items or summing quantities for duplicates
-
-                // Clear the guest cart from the session
-                HttpContext.Session.Remove("CartId");
-            }
-
-            // Re-associate the session with the user's cart
-            HttpContext.Session.SetString("CartId", userEmail); // Use the user's email or a unique identifier as the cart ID
-
-            // Optionally, save any changes to the cart in the database
-        }
         [HttpPost]
         public async Task<IActionResult> Login(LoginVM model)
         {
@@ -71,7 +49,7 @@ namespace BuyBikeShop.Controllers
                     CartManager.SaveCartInCookie(userCart, HttpContext, userManager); // Save the loaded or new cart back into a cookie
                     HttpContext.Session.SetString("CartId", user.Id.ToString()); // Set the session cart ID to the user's ID
 
-                    await MergeGuestCartToUserCart(model.Email);
+                  
                     return RedirectToAction("Index", "Home");
                  
                 }

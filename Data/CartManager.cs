@@ -64,27 +64,70 @@ public static class CartManager
 
     public static void UpdateCartItemQuantity(Cart cart, int productId, int newQuantity)
     {
-        // Find the cart item by productId
         var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
         if (cartItem != null)
         {
-            // Update the quantity
-            cartItem.Quantity = newQuantity;
-
-            // Optionally, if you're using a database, persist these changes
-            // This might involve calling your repository or DbContext to save changes
-        }
-        else
-        {
-            // If the item doesn't exist in the cart and the new quantity is greater than 0, add it to the cart
-            // This is optional and depends on your application's requirements
             if (newQuantity > 0)
             {
-                cart.CartItems.Add(new CartItem { ProductId = productId, Quantity = newQuantity });
-                // Again, persist these changes if necessary
+                // Update the quantity of the existing item
+                cartItem.Quantity = newQuantity;
+            }
+            else
+            {
+                // If the new quantity is zero or negative, remove the item from the cart
+                cart.CartItems.Remove(cartItem);
+            }
+        }
+        else if (newQuantity > 0)
+        {
+            // If the item doesn't exist and the new quantity is positive, add the new item
+            cart.CartItems.Add(new CartItem { ProductId = productId, Quantity = newQuantity });
+        }
+        // No action if the item doesn't exist and new quantity is zero or negative
+    }
+
+    /*   public static void MergeCarts(Cart mainCart, Cart cartToMerge)
+       {
+           foreach (var itemToMerge in cartToMerge.CartItems)
+           {
+               var existingItem = mainCart.CartItems.FirstOrDefault(ci => ci.ProductId == itemToMerge.ProductId);
+               if (existingItem != null)
+               {
+                   // If the item exists in the main cart, update the quantity.
+                   // If needed, adjust the logic here to handle specific merge rules (e.g., taking the max, summing quantities, etc.)
+                   existingItem.Quantity = Math.Max(existingItem.Quantity, itemToMerge.Quantity);
+               }
+               else
+               {
+                   // If the item doesn't exist in the main cart, add it.
+                   mainCart.CartItems.Add(new CartItem
+                   {
+                       ProductId = itemToMerge.ProductId,
+                       Quantity = itemToMerge.Quantity
+                   });
+               }
+           }
+       }
+   */
+
+    public static void MergeCarts(Cart mainCart, Cart cartToMerge)
+    {
+        foreach (var itemToMerge in cartToMerge.CartItems)
+        {
+            var existingItem = mainCart.CartItems.FirstOrDefault(ci => ci.ProductId == itemToMerge.ProductId);
+            // If the item exists in the main cart, don't do anything to avoid duplicates
+            if (existingItem == null)
+            {
+                // If the item doesn't exist in the main cart, add it.
+                mainCart.CartItems.Add(new CartItem
+                {
+                    ProductId = itemToMerge.ProductId,
+                    Quantity = itemToMerge.Quantity
+                });
             }
         }
     }
+
 
 
 
@@ -103,17 +146,16 @@ public static class CartManager
          // Depending on your application's structure, you might need to persist these changes to a database
      }*/
 
-    public static void RemoveFromCart(HttpContext httpContext, int productId)
+    public static void RemoveFromCart(Cart cart, int productId)
     {
-        var cart = GetCart(httpContext); // Retrieve the cart using HttpContext
-
         var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
         if (cartItem != null)
         {
-            cart.CartItems.Remove(cartItem);
-            // Optionally, update the cart in the database or persistent storage if needed
+            cart.CartItems.Remove(cartItem); // Remove the item from the cart
         }
+        // If the item does not exist in the cart, no action is required.
     }
+
 
 
     /* public static Cart GetCart(HttpContext httpContext)

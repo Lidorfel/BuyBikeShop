@@ -4,6 +4,7 @@ using BuyBikeShop.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace BuyBikeShop.Controllers
 {
@@ -83,31 +84,62 @@ namespace BuyBikeShop.Controllers
     return View("Cart",cart);
 }*/
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        /* public IActionResult Cart()
+         {
+             // Attempt to load the cart from a cookie
+             Cart cookieCart = CartManager.LoadCartFromCookie(HttpContext, userManager);
+
+             Cart sessionOrUserCart;
+             if (User.Identity.IsAuthenticated)
+             {
+                 // For authenticated users, get the cart based on the user's ID
+                 var userId = userManager.GetUserId(User);
+                 sessionOrUserCart = CartManager.GetCartByUserId(userId);
+             }
+             else
+             {
+                 // For guest users, get the cart based on the session ID
+                 sessionOrUserCart = CartManager.GetCart(HttpContext);
+             }
+
+             // Merge the carts from the cookie and the session/user-specific cart
+             Cart mergedCart = MergeCarts(cookieCart, sessionOrUserCart);
+
+             // Fetch product details for each cart item
+             foreach (var item in mergedCart.CartItems)
+             {
+                 var product = _context.Products.Find(item.ProductId);
+                 if (product != null)
+                 {
+                     item.Product = product; // Ensure each cart item has the latest product details
+                 }
+             }
+
+             // Save the merged cart back into the session and cookie
+             HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mergedCart));
+             CartManager.SaveCartInCookie(mergedCart, HttpContext, userManager);
+
+             return View("Cart", mergedCart);
+         }*/
+
+
         public IActionResult Cart()
         {
-            Cart cart;
+            // Load the main cart from the session or create a new one
+            var mainCart = CartManager.GetCart(HttpContext);
 
-            // Attempt to load the cart from a cookie
-            cart = CartManager.LoadCartFromCookie(HttpContext, userManager);
+            // Load the cart from the cookie
+            var cookieCart = CartManager.LoadCartFromCookie(HttpContext, userManager);
 
-            // If no cart is found in cookies, get or create a new cart
-            if (cart == null || !cart.CartItems.Any())
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    // For authenticated users, get the cart based on the user's ID
-                    var userId = userManager.GetUserId(User);
-                    cart = CartManager.GetCartByUserId(userId);
-                }
-                else
-                {
-                    // For guest users, get the cart based on the session ID
-                    cart = CartManager.GetCart(HttpContext);
-                }
-            }
+            // Merge the carts, avoiding duplicates
+            CartManager.MergeCarts(mainCart, cookieCart);
 
-            // Fetch product details for each cart item
-            foreach (var item in cart.CartItems)
+            // Save the merged cart back to the session and cookie for consistency
+            HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));
+            CartManager.SaveCartInCookie(mainCart, HttpContext, userManager);
+
+            // Fetch product details for each cart item, if necessary
+            foreach (var item in mainCart.CartItems)
             {
                 var product = _context.Products.Find(item.ProductId);
                 if (product != null)
@@ -116,8 +148,46 @@ namespace BuyBikeShop.Controllers
                 }
             }
 
-            return View("Cart", cart);
+            return View("Cart", mainCart);
         }
+
+
+        private Cart MergeCarts(Cart primaryCart, Cart secondaryCart)
+        {
+            var mergedCart = new Cart();
+            mergedCart.CartItems = new List<CartItem>();
+
+            // Add all items from the primary cart to the merged cart
+            foreach (var item in primaryCart.CartItems)
+            {
+                mergedCart.CartItems.Add(new CartItem
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity
+                });
+            }
+
+            // Add or update items from the secondary cart in the merged cart
+            foreach (var item in secondaryCart.CartItems)
+            {
+                var existingItem = mergedCart.CartItems.FirstOrDefault(ci => ci.ProductId == item.ProductId);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += item.Quantity; // Update quantity if the item exists
+                }
+                else
+                {
+                    mergedCart.CartItems.Add(new CartItem // Add new item if it doesn't exist
+                    {
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity
+                    });
+                }
+            }
+
+            return mergedCart;
+        }
+
 
 
 
