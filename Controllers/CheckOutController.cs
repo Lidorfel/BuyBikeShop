@@ -243,12 +243,13 @@ namespace BuyBikeShop.Controllers
         [HttpPost]
         public async Task <IActionResult> CreateOrder(PaymentVM pay)
         {
+            var cart = CartManager.GetCart(HttpContext);
             try
             { 
                 Customer cust = null;
                 string customerName = pay.cp.first_name;
                 List<OrderProduct> OrderProductsList = new List<OrderProduct>();
-                var cart = CartManager.GetCart(HttpContext);
+                
                 foreach (var item in cart.CartItems)
                 {
                     var pr = _context.Products.FirstOrDefault(i=>i.Id==item.ProductId);
@@ -323,7 +324,7 @@ namespace BuyBikeShop.Controllers
             {
                 string[] values = ex.Message.Split("&");
                 TempData["OrderNumber"] = "Sorry, there is not enough stock in this Product : " + values[0];
-                CartManager.RemoveFromCart(HttpContext, int.Parse(values[1]));
+                CartManager.RemoveFromCart(cart, int.Parse(values[1]),HttpContext,userManager);
                 return ConfirmPurchase();
             }
         }

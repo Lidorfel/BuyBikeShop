@@ -37,6 +37,7 @@ namespace BuyBikeShop.Controllers
                     || p.Sub_Class.ToString().ToLower().Contains(word)
                     || p.Title.ToString().ToLower().Contains(word)
                     || p.Color.ToString().ToLower().Contains(word)
+                    || p.Id.ToString().ToLower().Equals(word)
                     );
                 }
                 

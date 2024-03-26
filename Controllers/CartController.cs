@@ -118,7 +118,7 @@ public class CartController : Controller
         CartManager.MergeCarts(mainCart, cookieCart);
 
         // Perform the remove action on the merged cart
-        CartManager.RemoveFromCart(mainCart, productId);
+        CartManager.RemoveFromCartP(mainCart, productId);
 
         // Save the updated merged cart back to the session and cookie
         HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));

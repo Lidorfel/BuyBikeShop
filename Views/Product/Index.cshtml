@@ -21,7 +21,9 @@
 
     <h1 class="my-4">
         @firstProduct.Class_Name-@firstProduct.Sub_Class
+        <span class="text-secondary" style="font-size:16px">S/N: @firstProduct.Id</span>
     </h1>
+    
 
     <div class="row">
 
@@ -146,20 +148,33 @@
     <div id="relatedProjectsCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             @{
-                int counter = 0;
-                bool isActive = true;
-                int totalItems = Model.Count();
+                int totalItems = Model.Count()-1;
+                List<Product> productsList = Model.ToList();
+                productsList.RemoveAt(0);
+
+                IEnumerable<Product> test = productsList.AsEnumerable();
+                int itemsPerSlide = 3; // Number of items to show per slide
+
+                // Calculate the total number of slides
+                int totalSlides = (int)Math.Ceiling((double)totalItems / itemsPerSlide);
             }
-            @for (int i = 0; i < totalItems; i += 3)
+
+            @for (int slideIndex = 0; slideIndex < totalSlides; slideIndex++)
             {
-                <div class="carousel-item @(isActive ? "active" : "")">
+                // Calculate the index of the first item in this slide
+                int startIndex = slideIndex * itemsPerSlide % totalItems;
+
+                <div class="carousel-item @(slideIndex == 0 ? "active" : "")">
                     <div class="row" style="margin-left:120px">
-                        @foreach (var product in Model.Skip(i).Take(3))
+                        @for (int itemOffset = 0; itemOffset < itemsPerSlide; itemOffset++)
                         {
-                            
+                            // Calculate the index of the current item, considering wrap-around
+                            int currentIndex = (startIndex + itemOffset) % totalItems;
+                            var product = productsList[currentIndex];
+
                             <div class="col-md-4 col-sm-6 mb-4">
                                 <a asp-controller="Product" asp-action="" asp-route-id="@product.Id"><img class="img-fluid" style="height:200px" src="@product.Photo" alt="@product.Title"></a>
-                                
+
                                 <small style="display: block;">@product.Title</small>
 
                                 @if (product.Sale_Perc > 0)
@@ -175,22 +190,8 @@
                                 }
                             </div>
                         }
-                        @if (i + 3 >= totalItems)
-                        {
-                            int remainingItems = 3 - (totalItems % 3);
-                            remainingItems = remainingItems == 3 ? 0 : remainingItems; 
-                            @for (int j = 0; j < remainingItems; j++)
-                            {
-                                <div class="col-md-4 col-sm-6 mb-4">
-                                    <div class="coming-soon-placeholder" style=" padding-top:100px;">
-                                        <b>Coming Soon <span class="bi bi-hourglass-split" style="font-size:x-large"></span></b>
-                                    </div>
-                                </div>
-                            }
-                        }
                     </div>
                 </div>
-                isActive = false;
             }
         </div>
         <a class="carousel-control-prev" href="#relatedProjectsCarousel" role="button" data-bs-slide="prev">
@@ -198,11 +199,10 @@
             <span class="visually-hidden">Previous</span>
         </a>
         <a class="carousel-control-next" href="#relatedProjectsCarousel" role="button" data-bs-slide="next">
-            <span class="bi bi-chevron-right text-dark" style="font-size: 2rem;"></span>
+            <span class="bi bi-chevron-right text-dark" style="font-size: 2rem; margin-left:50px"></span>
             <span class="visually-hidden">Next</span>
         </a>
     </div>
-
 
 </div>
 

@@ -146,7 +146,7 @@ public static class CartManager
          // Depending on your application's structure, you might need to persist these changes to a database
      }*/
 
-    public static void RemoveFromCart(Cart cart, int productId)
+    public static void RemoveFromCartP(Cart cart, int productId)
     {
         var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
         if (cartItem != null)
@@ -155,6 +155,22 @@ public static class CartManager
         }
         // If the item does not exist in the cart, no action is required.
     }
+
+    public static void RemoveFromCart(Cart cart, int productId, HttpContext httpContext, UserManager<Customer> userManager)
+    {
+
+        var cookieCart = CartManager.LoadCartFromCookie(httpContext, userManager);
+
+        // Merge the cookie cart into the main cart
+        CartManager.MergeCarts(cart, cookieCart);
+
+        // Perform the remove action on the merged cart
+        RemoveFromCartP(cart, productId);
+        // Save the updated merged cart back to the session and cookie
+        httpContext.Session.SetString("Cart", JsonConvert.SerializeObject(cart));
+        CartManager.SaveCartInCookie(cart, httpContext, userManager);
+    }
+
 
 
 
