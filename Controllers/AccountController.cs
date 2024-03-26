@@ -25,41 +25,31 @@ namespace BuyBikeShop.Controllers
         {
             return View();
         }
-        private async Task MergeGuestCartToUserCart(string userEmail)
-        {
-            // Assuming GetCartByUserId fetches the user's cart from the database or session
-            var userCart = CartManager.GetCartByUserId(userEmail);
 
-            // Retrieve the guest cart from the session
-            var sessionCartId = HttpContext.Session.GetString("CartId");
-            if (!string.IsNullOrEmpty(sessionCartId) && sessionCartId != userEmail)
-            {
-                var guestCart = CartManager.GetCartBySessionId(sessionCartId);
-
-                // Merge logic here: Transfer items from guestCart to userCart
-                // This might involve adding items or summing quantities for duplicates
-
-                // Clear the guest cart from the session
-                HttpContext.Session.Remove("CartId");
-            }
-
-            // Re-associate the session with the user's cart
-            HttpContext.Session.SetString("CartId", userEmail); // Use the user's email or a unique identifier as the cart ID
-
-            // Optionally, save any changes to the cart in the database
-        }
         [HttpPost]
         public async Task<IActionResult> Login(LoginVM model)
         {
             if (ModelState.IsValid)
             {
+                var guestCartId = HttpContext.Session.GetString("CartId");
+                if (!string.IsNullOrEmpty(guestCartId))
+                {
+                    HttpContext.Session.SetString("GuestCartId", guestCartId);
+                }
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if(result.Succeeded)
                 {
                     var user = await userManager.FindByEmailAsync(model.Email);
-                    var userCart = CartManager.GetCartByUserId(user.Id);
-                    HttpContext.Session.SetString("CartId", user.Id.ToString());
-                    await MergeGuestCartToUserCart(model.Email);
+                    var userCart = CartManager.LoadCartFromCookie(HttpContext, userManager); // Load the user's cart from the cookie
+                    if (userCart == null || userCart.CartItems.Count == 0)
+                    {
+                        // If the user's cart is empty or doesn't exist, consider loading a default cart or creating a new one
+                        userCart = new Cart();
+                    }
+                    CartManager.SaveCartInCookie(userCart, HttpContext, userManager); // Save the loaded or new cart back into a cookie
+                    HttpContext.Session.SetString("CartId", user.Id.ToString()); // Set the session cart ID to the user's ID
+
+                  
                     return RedirectToAction("Index", "Home");
                  
                 }
@@ -101,9 +91,26 @@ namespace BuyBikeShop.Controllers
             return View(model);
         }
         public async Task<IActionResult> Logout()
-        {
+        {/*
+            var userCookieName = $"Cart_User_{userManager.GetUserId(User)}";
+            Response.Cookies.Delete(userCookieName);
+
+            var guestCartId = HttpContext.Session.GetString("GuestCartId");
             await signInManager.SignOutAsync();
             HttpContext.Session.Remove("CartId");
+            if (!string.IsNullOrEmpty(guestCartId))
+            {
+                HttpContext.Session.SetString("CartId", guestCartId);
+            }
+
+         */
+            var userCookieName = $"Cart_User_{userManager.GetUserId(User)}";
+            // Optionally rename the user-specific cart cookie to a guest cookie instead of deleting
+            // For example, copy the user cart cookie value to a "Cart_Guest" cookie, then delete the user cart cookie
+
+            await signInManager.SignOutAsync();
+            HttpContext.Session.Remove("CartId"); // Clear the session cart ID
+                                                  // If you're renaming the cookie to a guest co
             return RedirectToAction("Index", "Home");
 		}
 		[Authorize]

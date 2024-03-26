@@ -1,6 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using BuyBikeShop.Models;
-using BuyBikeShop.Data; 
+using BuyBikeShop.Data;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Identity;
 
 public static class CartManager
 {
@@ -62,27 +64,70 @@ public static class CartManager
 
     public static void UpdateCartItemQuantity(Cart cart, int productId, int newQuantity)
     {
-        // Find the cart item by productId
         var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
         if (cartItem != null)
         {
-            // Update the quantity
-            cartItem.Quantity = newQuantity;
-
-            // Optionally, if you're using a database, persist these changes
-            // This might involve calling your repository or DbContext to save changes
-        }
-        else
-        {
-            // If the item doesn't exist in the cart and the new quantity is greater than 0, add it to the cart
-            // This is optional and depends on your application's requirements
             if (newQuantity > 0)
             {
-                cart.CartItems.Add(new CartItem { ProductId = productId, Quantity = newQuantity });
-                // Again, persist these changes if necessary
+                // Update the quantity of the existing item
+                cartItem.Quantity = newQuantity;
+            }
+            else
+            {
+                // If the new quantity is zero or negative, remove the item from the cart
+                cart.CartItems.Remove(cartItem);
+            }
+        }
+        else if (newQuantity > 0)
+        {
+            // If the item doesn't exist and the new quantity is positive, add the new item
+            cart.CartItems.Add(new CartItem { ProductId = productId, Quantity = newQuantity });
+        }
+        // No action if the item doesn't exist and new quantity is zero or negative
+    }
+
+    /*   public static void MergeCarts(Cart mainCart, Cart cartToMerge)
+       {
+           foreach (var itemToMerge in cartToMerge.CartItems)
+           {
+               var existingItem = mainCart.CartItems.FirstOrDefault(ci => ci.ProductId == itemToMerge.ProductId);
+               if (existingItem != null)
+               {
+                   // If the item exists in the main cart, update the quantity.
+                   // If needed, adjust the logic here to handle specific merge rules (e.g., taking the max, summing quantities, etc.)
+                   existingItem.Quantity = Math.Max(existingItem.Quantity, itemToMerge.Quantity);
+               }
+               else
+               {
+                   // If the item doesn't exist in the main cart, add it.
+                   mainCart.CartItems.Add(new CartItem
+                   {
+                       ProductId = itemToMerge.ProductId,
+                       Quantity = itemToMerge.Quantity
+                   });
+               }
+           }
+       }
+   */
+
+    public static void MergeCarts(Cart mainCart, Cart cartToMerge)
+    {
+        foreach (var itemToMerge in cartToMerge.CartItems)
+        {
+            var existingItem = mainCart.CartItems.FirstOrDefault(ci => ci.ProductId == itemToMerge.ProductId);
+            // If the item exists in the main cart, don't do anything to avoid duplicates
+            if (existingItem == null)
+            {
+                // If the item doesn't exist in the main cart, add it.
+                mainCart.CartItems.Add(new CartItem
+                {
+                    ProductId = itemToMerge.ProductId,
+                    Quantity = itemToMerge.Quantity
+                });
             }
         }
     }
+
 
 
 
@@ -101,34 +146,53 @@ public static class CartManager
          // Depending on your application's structure, you might need to persist these changes to a database
      }*/
 
-    public static void RemoveFromCart(HttpContext httpContext, int productId)
+    public static void RemoveFromCart(Cart cart, int productId)
     {
-        var cart = GetCart(httpContext); // Retrieve the cart using HttpContext
-
         var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
         if (cartItem != null)
         {
-            cart.CartItems.Remove(cartItem);
-            // Optionally, update the cart in the database or persistent storage if needed
+            cart.CartItems.Remove(cartItem); // Remove the item from the cart
         }
+        // If the item does not exist in the cart, no action is required.
     }
 
 
+
+    /* public static Cart GetCart(HttpContext httpContext)
+     {
+         string cartId = GetCartId(httpContext);
+         var cart = Carts.GetOrAdd(cartId, _ => new Cart());
+
+         if (string.IsNullOrEmpty(httpContext.User.Identity.Name))
+         {
+             cart.SessionId = cartId; // Set SessionId for guest carts
+         }
+         else
+         {
+             cart.CustomerId = httpContext.User.Identity.Name; // Set CustomerId for authenticated users
+         }
+
+         return cart;
+     }
+ */
+
     public static Cart GetCart(HttpContext httpContext)
     {
-        string cartId = GetCartId(httpContext);
-        var cart = Carts.GetOrAdd(cartId, _ => new Cart());
+        string cartId;
 
-        if (string.IsNullOrEmpty(httpContext.User.Identity.Name))
+        // Check if user is authenticated and has a user-specific cart
+        if (!string.IsNullOrEmpty(httpContext.User.Identity.Name))
         {
-            cart.SessionId = cartId; // Set SessionId for guest carts
+            cartId = httpContext.User.Identity.Name;
         }
         else
         {
-            cart.CustomerId = httpContext.User.Identity.Name; // Set CustomerId for authenticated users
+            // Use existing guest cart ID or generate a new one for guests
+            cartId = httpContext.Session.GetString("CartId") ?? Guid.NewGuid().ToString();
+            httpContext.Session.SetString("CartId", cartId);
         }
 
-        return cart;
+        return Carts.GetOrAdd(cartId, _ => new Cart());
     }
     public static void ResetCart(Cart c)
     {
@@ -184,6 +248,75 @@ public static class CartManager
         }
         return cart;
     }
+
+    public static void SaveCartInCookie(Cart cart, HttpContext httpContext, UserManager<Customer> userManager)
+    {
+        string cookieName;
+
+        // Check if the user is authenticated
+        if (httpContext.User.Identity.IsAuthenticated)
+        {
+            // Get the user ID
+            var userId = userManager.GetUserId(httpContext.User);
+
+            // Use the user ID for the cookie name
+            cookieName = $"Cart_User_{userId}";
+        }
+        else
+        {
+            // Use a generic name for the guest cart cookie
+            cookieName = "Cart_Guest";
+        }
+
+        // Serialize the cart object to a JSON string
+        string serializedCart = JsonConvert.SerializeObject(cart);
+
+        // Create the cookie with the serialized cart
+        httpContext.Response.Cookies.Append(cookieName, serializedCart, new CookieOptions
+        {
+            Expires = DateTime.UtcNow.AddDays(7),
+            HttpOnly = true
+        });
+    }
+
+    public static Cart LoadCartFromCookie(HttpContext httpContext, UserManager<Customer> userManager)
+    {
+        Cart cart = null;
+        string serializedCart;
+
+        // Check if the user is authenticated
+        if (httpContext.User.Identity.IsAuthenticated)
+        {
+            // For an authenticated user, try to retrieve the user-specific cart cookie
+            var userId = userManager.GetUserId(httpContext.User);
+            string userCookieName = $"Cart_User_{userId}";
+            serializedCart = httpContext.Request.Cookies[userCookieName];
+        }
+        else
+        {
+            // For a guest, try to retrieve the guest cart cookie
+            serializedCart = httpContext.Request.Cookies["Cart_Guest"];
+        }
+
+        // If a serialized cart is found in the cookie, deserialize it
+        if (!string.IsNullOrEmpty(serializedCart))
+        {
+            try
+            {
+                cart = JsonConvert.DeserializeObject<Cart>(serializedCart);
+            }
+            catch
+            {
+                // Handle potential deserialization errors, log if necessary
+                cart = null;
+            }
+        }
+
+        // Return the deserialized cart or null if not found or deserialization failed
+        return cart ?? new Cart(); // Consider returning a new Cart instead of null to avoid null reference errors elsewhere
+    }
+
+
 
 
 

@@ -3,6 +3,7 @@ using BuyBikeShop.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 public class CartController : Controller
 {
@@ -33,66 +34,98 @@ public class CartController : Controller
     }*/
 
     [HttpPost]
-    public IActionResult AddToCart(int productId, int quantity)
+    /*public IActionResult AddToCart(int productId, int quantity)
     {
         var cart = CartManager.GetCart(HttpContext);
         CartManager.AddToCart(cart, productId, quantity); // Pass the whole Cart object
 
         return RedirectToAction("Index", "Product", new { id = productId });
     }
+*/
+
+    public IActionResult AddToCart(int productId, int quantity)
+    {
+        // Load the main cart (session or user cart)
+        var mainCart = CartManager.GetCart(HttpContext);
+
+        // Only perform merging if the user is not authenticated (guest user scenario)
+        if (!User.Identity.IsAuthenticated)
+        {
+            var cookieCart = CartManager.LoadCartFromCookie(HttpContext, userManager);
+
+            // Merge the cookie cart into the main cart only if they are different and cookie cart has items
+            if (cookieCart.CartItems.Count > 0 && !ReferenceEquals(mainCart, cookieCart))
+            {
+                CartManager.MergeCarts(mainCart, cookieCart);
+            }
+        }
+
+        // Check if the product already exists in the cart to update quantity instead of adding a new entry
+        var existingItem = mainCart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
+        if (existingItem != null)
+        {
+            // Product exists, update quantity
+            existingItem.Quantity += quantity;
+        }
+        else
+        {
+            // Product does not exist, add new
+            CartManager.AddToCart(mainCart, productId, quantity);
+        }
+
+        // Save the updated main cart into the session and cookie
+        HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));
+        CartManager.SaveCartInCookie(mainCart, HttpContext, userManager);
+
+        return RedirectToAction("Index", "Product", new { id = productId });
+    }
 
 
-    [HttpPost]
-    /* public IActionResult UpdateCartItemQuantity(int productId, int newQuantity)
-     {
-         string customerId = userManager.GetUserId(User);
-         CartManager.UpdateCartItemQuantity(customerId, productId, newQuantity);
-
-         // Redirect back to the cart view or return a JSON response if using AJAX
-         return RedirectToAction("Cart", "CheckOut");
-     }*/
 
     [HttpPost]
     public async Task<IActionResult> UpdateCartItemQuantity(int productId, int currentQuantity, string change)
     {
-        var cart = CartManager.GetCart(HttpContext);
+        // Load the main cart from the session or cookie
+        var mainCart = CartManager.GetCart(HttpContext);
+
+        // Perform the quantity update
         var specificProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        if (specificProduct != null)
+        {
+            int newQuantity = currentQuantity + (change == "increase" ? 1 : -1);
+            newQuantity = Math.Max(newQuantity, 1); // Ensure quantity doesn't go below 1
+            newQuantity = Math.Min(newQuantity, specificProduct.Quantity); // Ensure quantity doesn't exceed stock
 
-        int newQuantity = currentQuantity + (change == "increase" ? 1 : -1);
-        newQuantity = Math.Max(newQuantity, 1); // Ensure quantity doesn't go below 0
-     
-        newQuantity = Math.Min(newQuantity, specificProduct.Quantity);
+            CartManager.UpdateCartItemQuantity(mainCart, productId, newQuantity);
+        }
 
-        CartManager.UpdateCartItemQuantity(cart, productId, newQuantity);
+        // Save the updated main cart back to the session and cookie
+        HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));
+        CartManager.SaveCartInCookie(mainCart, HttpContext, userManager);
 
         return RedirectToAction("Cart", "CheckOut");
     }
 
-
-
-
-
-
-
-    [HttpPost]
-    /*public IActionResult RemoveFromCart(int productId)
-    {
-        string customerId = userManager.GetUserId(User);
-        CartManager.RemoveFromCart(customerId, productId);
-
-        // Redirect back to the cart view
-        return RedirectToAction("Cart", "CheckOut");
-    }*/
 
     [HttpPost]
     public IActionResult RemoveFromCart(int productId)
     {
-        CartManager.RemoveFromCart(HttpContext, productId);
+        // Load the main cart (session or user cart) and the cookie cart
+        var mainCart = CartManager.GetCart(HttpContext);
+        var cookieCart = CartManager.LoadCartFromCookie(HttpContext, userManager);
 
-        // Redirect back to the cart view or to another appropriate view
+        // Merge the cookie cart into the main cart
+        CartManager.MergeCarts(mainCart, cookieCart);
+
+        // Perform the remove action on the merged cart
+        CartManager.RemoveFromCart(mainCart, productId);
+
+        // Save the updated merged cart back to the session and cookie
+        HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));
+        CartManager.SaveCartInCookie(mainCart, HttpContext, userManager);
+
         return RedirectToAction("Cart", "CheckOut");
     }
-
 
     public class UpdateCartItemModel
     {
