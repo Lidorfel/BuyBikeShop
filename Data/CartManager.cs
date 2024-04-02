@@ -3,6 +3,7 @@ using BuyBikeShop.Models;
 using BuyBikeShop.Data;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
+using BuyBikeShop.Migrations;
 
 public static class CartManager
 {
@@ -35,6 +36,7 @@ public static class CartManager
 
     public static void AddToCart(Cart cart, int productId, int quantity)
     {
+
         var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
         if (cartItem != null)
         {
@@ -46,6 +48,7 @@ public static class CartManager
             // Add the new item to the cart
             cart.CartItems.Add(new CartItem { ProductId = productId, Quantity = quantity });
         }
+
 
         // Depending on your setup, you might need to update the cart in your data store here
     }
@@ -210,12 +213,20 @@ public static class CartManager
 
         return Carts.GetOrAdd(cartId, _ => new Cart());
     }
-    public static void ResetCart(Cart c)
+    public static void ResetCart(Cart c, HttpContext httpContext, UserManager<Customer> userManager)
     {
-        if (c.CartItems.Count>0)
-        {
-            c.CartItems = new List<CartItem>();
-        }
+        var cookieCart = CartManager.LoadCartFromCookie(httpContext, userManager);
+
+        // Merge the cookie cart into the main cart
+        CartManager.MergeCarts(c, cookieCart);
+
+        // Perform the remove action on the merged cart
+        c.CartItems = new List<CartItem>();
+        
+        // Save the updated merged cart back to the session and cookie
+        httpContext.Session.SetString("Cart", JsonConvert.SerializeObject(c));
+        CartManager.SaveCartInCookie(c, httpContext, userManager);
+        
     }
 
 

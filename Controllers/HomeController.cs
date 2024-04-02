@@ -22,7 +22,7 @@ namespace BuyBikeShop.Controllers
             var ProductContext = await _context.Products.ToListAsync();
             return View(ProductContext);
         }
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> FilteredBySearch(string searchBar)
         {
             IQueryable<Product> products = _context.Products;

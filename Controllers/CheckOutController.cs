@@ -103,69 +103,8 @@ namespace BuyBikeShop.Controllers
 
 
 
-/*public IActionResult Cart()
-{
-    if (!User.Identity.IsAuthenticated)
-    {
-       *//*Create a cart for the user find some logic to it because he is not connected*//*
-    }
-
-
-
-    var userId = userManager.GetUserId(User);
-    var cart = CartManager.GetCart(userId);
-
-    // Fetch product details for each cart item
-    foreach (var item in cart.CartItems)
-    {
-        var product = _context.Products.Find(item.ProductId);
-        if (product != null)
-        {
-            item.Product = product; // Assuming CartItem has a Product property
-        }
-    }
-
-    return View("Cart",cart);
-}*/
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        /* public IActionResult Cart()
-         {
-             // Attempt to load the cart from a cookie
-             Cart cookieCart = CartManager.LoadCartFromCookie(HttpContext, userManager);
-
-             Cart sessionOrUserCart;
-             if (User.Identity.IsAuthenticated)
-             {
-                 // For authenticated users, get the cart based on the user's ID
-                 var userId = userManager.GetUserId(User);
-                 sessionOrUserCart = CartManager.GetCartByUserId(userId);
-             }
-             else
-             {
-                 // For guest users, get the cart based on the session ID
-                 sessionOrUserCart = CartManager.GetCart(HttpContext);
-             }
-
-             // Merge the carts from the cookie and the session/user-specific cart
-             Cart mergedCart = MergeCarts(cookieCart, sessionOrUserCart);
-
-             // Fetch product details for each cart item
-             foreach (var item in mergedCart.CartItems)
-             {
-                 var product = _context.Products.Find(item.ProductId);
-                 if (product != null)
-                 {
-                     item.Product = product; // Ensure each cart item has the latest product details
-                 }
-             }
-
-             // Save the merged cart back into the session and cookie
-             HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mergedCart));
-             CartManager.SaveCartInCookie(mergedCart, HttpContext, userManager);
-
-             return View("Cart", mergedCart);
-         }*/
-
+        
 
         public IActionResult Cart()
         {
@@ -196,43 +135,9 @@ namespace BuyBikeShop.Controllers
         }
 
 
-        private Cart MergeCarts(Cart primaryCart, Cart secondaryCart)
-        {
-            var mergedCart = new Cart();
-            mergedCart.CartItems = new List<CartItem>();
 
-            // Add all items from the primary cart to the merged cart
-            foreach (var item in primaryCart.CartItems)
-            {
-                mergedCart.CartItems.Add(new CartItem
-                {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity
-                });
-            }
 
-            // Add or update items from the secondary cart in the merged cart
-            foreach (var item in secondaryCart.CartItems)
-            {
-                var existingItem = mergedCart.CartItems.FirstOrDefault(ci => ci.ProductId == item.ProductId);
-                if (existingItem != null)
-                {
-                    existingItem.Quantity += item.Quantity; // Update quantity if the item exists
-                }
-                else
-                {
-                    mergedCart.CartItems.Add(new CartItem // Add new item if it doesn't exist
-                    {
-                        ProductId = item.ProductId,
-                        Quantity = item.Quantity
-                    });
-                }
-            }
-
-            return mergedCart;
-        }
-
-        public IActionResult ConfirmPurchase()
+        private IActionResult ConfirmPurchase()
         {
             var orderNum = TempData["OrderNumber"] as string;
             return View("ConfirmPurchase",orderNum);
@@ -317,7 +222,7 @@ namespace BuyBikeShop.Controllers
                 {
                     TempData["OrderNumber"] = order.OrderId.ToString();
                 }
-                CartManager.ResetCart(CartManager.GetCart(HttpContext));
+                CartManager.ResetCart(CartManager.GetCart(HttpContext) ,HttpContext, userManager);
                 return ConfirmPurchase();
             }
             catch (Exception ex)

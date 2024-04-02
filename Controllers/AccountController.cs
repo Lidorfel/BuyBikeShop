@@ -23,7 +23,10 @@ namespace BuyBikeShop.Controllers
 		}
         public IActionResult Login()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction( "Index", "Home");
+            else
+                return View();
         }
 
         [HttpPost]
@@ -60,7 +63,10 @@ namespace BuyBikeShop.Controllers
         }
         public IActionResult Register()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction( "Index", "Home");
+            else
+                return View();
         }
         [HttpPost]
         public async Task<IActionResult> Register(RegisterVM model)
@@ -90,35 +96,23 @@ namespace BuyBikeShop.Controllers
             }
             return View(model);
         }
+        [HttpPost]
         public async Task<IActionResult> Logout()
-        {/*
+        {
             var userCookieName = $"Cart_User_{userManager.GetUserId(User)}";
-            Response.Cookies.Delete(userCookieName);
+            
 
-            var guestCartId = HttpContext.Session.GetString("GuestCartId");
             await signInManager.SignOutAsync();
             HttpContext.Session.Remove("CartId");
-            if (!string.IsNullOrEmpty(guestCartId))
-            {
-                HttpContext.Session.SetString("CartId", guestCartId);
-            }
-
-         */
-            var userCookieName = $"Cart_User_{userManager.GetUserId(User)}";
-            // Optionally rename the user-specific cart cookie to a guest cookie instead of deleting
-            // For example, copy the user cart cookie value to a "Cart_Guest" cookie, then delete the user cart cookie
-
-            await signInManager.SignOutAsync();
-            HttpContext.Session.Remove("CartId"); // Clear the session cart ID
-                                                  // If you're renaming the cookie to a guest co
+                                                  
             return RedirectToAction("Index", "Home");
 		}
 		[Authorize]
 		public async Task<IActionResult> MyOrders()
 		{
-            //can't be null because [Authorize]
+
 			Customer curUser = _context.Customers.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            /*await CreateOrderForTest(curUser!);*/
+            
             List<Order> orders = await GetOrders(curUser!);
 			return View(orders);
 		}
@@ -136,40 +130,7 @@ namespace BuyBikeShop.Controllers
             }
             return new List<Order> ();
 		}
-		public async Task CreateOrderForTest(Customer curUser = null)
-		{
-
-			// Assume you have retrieved products from the database
-			List<Models.Product> products = await _context.Products.Take(2).ToListAsync(); // Taking two products for the order
-
-			// Create the order
-			Order order = new Order
-			{
-				OrderDate = DateTime.Now,
-				CustomerId = curUser != null ? curUser.Id : null,
-                CustomerName = curUser != null ? curUser.FName.ToString() +curUser.LName.ToString() : null , //instead of null, can take name from payment page
-				OrderProducts = new List<OrderProduct>
-                    {
-	                    new OrderProduct
-	                    {
-		                    Product = products[0],
-		                    Quantity = 3, // Assume the quantity ordered is 2
-                            UnitPrice = products[0].Price // Assume the unit price is the product's price
-                        },
-	                    new OrderProduct
-	                    {
-		                    Product = products[1],
-		                    Quantity = 2, // Assume the quantity ordered is 1
-                            UnitPrice = products[1].Price // Assume the unit price is the product's price
-	                    }
-                    }
-			};
-
-			// Add order to the database
-			_context.Orders.Add(order);
-			await _context.SaveChangesAsync();
-		}
-
+		
        
 
     }

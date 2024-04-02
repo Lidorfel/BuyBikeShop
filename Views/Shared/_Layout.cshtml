@@ -33,7 +33,7 @@
                     <li><a class="nav-link px-2 text-danger" asp-controller="Sale" asp-action="index">Sale</a></li>
                 </ul>
 
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" id="searchBarForm" role="search" method="get" asp-action="FilteredBySearch" asp-controller="Home">
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" id="searchBarForm" role="search" method="post" asp-action="FilteredBySearch" asp-controller="Home">
                     <input type="search" id="searchBar" name="searchBar" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="searchBar">
                 </form>
                 <partial name="_LoginPartial" />

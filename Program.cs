@@ -22,7 +22,7 @@ builder.Services.AddIdentity<Customer,IdentityRole>(
 builder.Services.AddMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromDays(1); // Sets the session timeout
+    options.IdleTimeout = TimeSpan.FromDays(7); // Sets the session timeout
     options.Cookie.HttpOnly = true; // Makes the cookie inaccessible to client-side scripts
     options.Cookie.IsEssential = true; // Marks the session cookie as essential for your application
 });
