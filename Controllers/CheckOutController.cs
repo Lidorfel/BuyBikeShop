@@ -27,7 +27,7 @@ namespace BuyBikeShop.Controllers
                 var product = _context.Products.Find(item.ProductId);
                 if (product != null)
                 {
-                    item.Product = product; // Assuming CartItem has a Product property
+                    item.Product = product; 
                 }
             }
             var payVM = new PaymentVM();
@@ -108,26 +108,24 @@ namespace BuyBikeShop.Controllers
 
         public IActionResult Cart()
         {
-            // Load the main cart from the session or create a new one
+        
             var mainCart = CartManager.GetCart(HttpContext);
 
-            // Load the cart from the cookie
+
             var cookieCart = CartManager.LoadCartFromCookie(HttpContext, userManager);
 
-            // Merge the carts, avoiding duplicates
+  
             CartManager.MergeCarts(mainCart, cookieCart);
 
-            // Save the merged cart back to the session and cookie for consistency
             HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));
             CartManager.SaveCartInCookie(mainCart, HttpContext, userManager);
 
-            // Fetch product details for each cart item, if necessary
             foreach (var item in mainCart.CartItems)
             {
                 var product = _context.Products.Find(item.ProductId);
                 if (product != null)
                 {
-                    item.Product = product; // Ensure each cart item has the latest product details
+                    item.Product = product; 
                 }
             }
 

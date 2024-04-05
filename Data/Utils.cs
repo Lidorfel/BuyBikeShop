@@ -9,7 +9,7 @@
                 return input;
             }
 
-            // Convert the first letter to uppercase
+      
             string firstLetterCapitalized = char.ToUpper(input[0]) + input.Substring(1).ToLower();
             return firstLetterCapitalized;
         }

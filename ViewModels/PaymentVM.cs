@@ -4,7 +4,7 @@
 
 
     {
-         public Cart Cart { get; set; } /*by muhammad*/
+         public Cart Cart { get; set; }
 
 
         public CustomerPaymentDetailsVM cp { get; set; }

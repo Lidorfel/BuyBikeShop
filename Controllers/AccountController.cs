@@ -43,14 +43,14 @@ namespace BuyBikeShop.Controllers
                 if(result.Succeeded)
                 {
                     var user = await userManager.FindByEmailAsync(model.Email);
-                    var userCart = CartManager.LoadCartFromCookie(HttpContext, userManager); // Load the user's cart from the cookie
+                    var userCart = CartManager.LoadCartFromCookie(HttpContext, userManager); 
                     if (userCart == null || userCart.CartItems.Count == 0)
                     {
-                        // If the user's cart is empty or doesn't exist, consider loading a default cart or creating a new one
+                        
                         userCart = new Cart();
                     }
-                    CartManager.SaveCartInCookie(userCart, HttpContext, userManager); // Save the loaded or new cart back into a cookie
-                    HttpContext.Session.SetString("CartId", user.Id.ToString()); // Set the session cart ID to the user's ID
+                    CartManager.SaveCartInCookie(userCart, HttpContext, userManager); 
+                    HttpContext.Session.SetString("CartId", user.Id.ToString()); 
 
                   
                     return RedirectToAction("Index", "Home");

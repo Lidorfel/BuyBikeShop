@@ -1,9 +1,7 @@
 ﻿@using BuyBikeShop.ViewModels
 @model PaymentVM
 
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
     var currentUser = await userManager.GetUserAsync(User);
 }
@@ -12,12 +10,12 @@
 @using BuyBikeShop.Data;
 @inject UserManager<Customer> userManager
 
- @* <h1>This is payment page ordered quatity is @ViewBag.Quantity and the product ID is: @ViewBag.Id </h1>  *@
+ 
 
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
+
 
 
 <div class="container wrapper">
@@ -35,7 +33,7 @@
     <div class="row cart-body">
         <form class="form-horizontal" method="post" asp-action="CreateOrder" asp-controller="CheckOut">
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 col-md-push-6 col-sm-push-6" >
-                <!--REVIEW ORDER-->
+               
                 <div class="panel panel-info" style=" border-color:black">
                     <div class="panel-heading" style="background-color:black; color:white;" >
                         Review Order <div class="pull-right"><small><a href="Cart" style="color:white" class="afix-1">Edit Cart</a></small></div>
@@ -44,7 +42,7 @@
                         @foreach (var item in Model.Cart.CartItems){
                             var discountAmount = ((double)item.Product.Sale_Perc / 100) * item.Product.Price;
 
-                            // Apply the discount to get the new price, then add 1
+                            
                             var newPrice = item.Product.Price - discountAmount;
                             var total = newPrice * item.Quantity;
                             <div class="form-group">
@@ -79,10 +77,10 @@
                         </div>
                     </div>
                 </div>
-                <!--REVIEW ORDER END-->
+               
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 col-md-pull-6 col-sm-pull-6">
-                <!--SHIPPING METHOD-->
+            
                 <div class="panel panel-info" style="border-color:black">
                     <div class="panel-heading" style="background-color:black; color:white;">Address</div>
                     <div class="panel-body">
@@ -149,8 +147,7 @@
 
                     </div>
                 </div>
-                <!--SHIPPING METHOD END-->
-                <!--CREDIT CART PAYMENT-->
+                
 
                 <div class="panel panel-info" style="border-color:black">
                     <div class="panel-heading" style="background-color:black; color:white;"><span><i class="glyphicon glyphicon-lock"></i></span> Secure Payment</div>
@@ -227,8 +224,7 @@
                             </div>
                         </div>
 
-@*                        <input type="hidden" value="@Model.Cart"/>
- *@
+
                         <div class="form-group">
                             <div class="col-md-12">
                                 <span>Pay secure using your credit card.</span>
@@ -256,7 +252,7 @@
                         </div>
                     </div>
                 </div>
-                <!--CREDIT CART PAYMENT END-->
+                
 
             </div>
 
@@ -280,17 +276,16 @@
                 validateExpirationDate();
             });
         });
-        // Get the current year and month
+
         var currentDate = new Date();
         var currentYear = currentDate.getFullYear();
-        var currentMonth = currentDate.getMonth() + 1; // JavaScript months are zero-based
+        var currentMonth = currentDate.getMonth() + 1; 
 
-        // Add change event listeners to the select elements
         document.getElementById('ExpirationMonth').addEventListener('change', validateExpirationDate);
         document.getElementById('ExpirationYear').addEventListener('change', validateExpirationDate);
         console.log("outside the function");
 
-        // Function to validate the selected expiration date
+        
         function validateExpirationDate() {
             console.log("inside the function");
 
@@ -303,7 +298,7 @@
                 console.log("inside the function inside the if");
                 console.log(typeof selectedYear);
                 alert('Please select a future expiration date.');
-                // Clear the selected expiration date
+              
                 document.getElementById('yearSelect').selectedIndex = 0;
                 document.getElementById('monthSelect').selectedIndex = 0;
             }

@@ -6,28 +6,7 @@ namespace BuyBikeShop.Data
 {
     public static class ManageAES
     {
-        /*public static string Encrypt(string plainText, byte[] Key, byte[] IV)
-        {
-            byte[] encrypted;
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = Key;
-                aes.IV = IV;    
-                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter sw = new StreamWriter(cs)) 
-                        { 
-                            sw.Write(plainText);
-                            encrypted = ms.ToArray();
-                        }
-                    }
-                }
-            }
-            return Convert.ToBase64String(encrypted);
-        }*/
+        
         public static string Encrypt(string plainText, byte[] key, byte[] iv)
         {
             using (Aes aesAlg = Aes.Create())
@@ -72,28 +51,7 @@ namespace BuyBikeShop.Data
                 }
             }
         }
-        /*public static string Decrypt(string CipherText, byte[] Key, byte[] IV)
-        {
-            byte[] cipher = Convert.FromBase64String(CipherText);
-            string plainText = "";
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = Key;
-                aes.IV = IV;
-                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(cs))
-                        {
-                            plainText = sr.ReadToEnd();
-                        }
-                    }
-                }
-            }
-            return plainText;
-        } */
+       
     }
 }
 
@@ -108,7 +66,7 @@ public static class KeyManager
         }
     }
 
-    // Method to generate a random initialization vector (IV)
+    //generate a random initialization vector (IV)
     private static byte[] GenerateIV()
     {
         using (Aes aes = Aes.Create())
@@ -125,24 +83,23 @@ public static class KeyManager
     {
         return GenerateIV();
     }
-    // Method to save the encryption key and IV to a secure configuration file
+    //save the encryption key and IV to a secure configuration file
     public static void SaveKeyAndIV(byte[] key, byte[] iv)
     {
-        // Ensure that the directory exists
         Directory.CreateDirectory("secure");
 
-        // Write the key and IV to a file
+
         File.WriteAllBytes("secure/key.bin", key);
         File.WriteAllBytes("secure/iv.bin", iv);
     }
 
-    // Method to load the encryption key from the secure configuration file
+    //load the encryption key 
     public static byte[] LoadKey()
     {
         return File.ReadAllBytes("secure/key.bin");
     }
 
-    // Method to load the IV from the secure configuration file
+    //load the IV from the secure configuration file
     public static byte[] LoadIV()
     {
         return File.ReadAllBytes("secure/iv.bin");

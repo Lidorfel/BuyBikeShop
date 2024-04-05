@@ -1,28 +1,4 @@
-﻿﻿@* @model IEnumerable<Order>
-@{
-	if (Model.Count() == 0)
-	{
-		<h1>You haven't placed orders yet - <a class="text-decoration-none" asp-action="Index" asp-controller="Home">Start Shop Now</a></h1>
-	}
-	else
-	{
-		<h1>Your Orders : </h1>
-		@foreach(var ord in Model){
-			<h3>Order Number - @ord.OrderId</h3>
-
-			<h4>Total Price - @ord.TotalPrice</h4>
-			@foreach (var p in ord.OrderProducts)
-			{
-				<h6>product name - @p.Product.Title</h6>
-				<h6>orderProduct id - @p.OrderProductId</h6>
-				<h6>p quantity  - @p.Quantity</h6>
-				<h6>p unitPrice - @p.UnitPrice</h6>
-			}
-		}
-
-	}
-}
- *@
+﻿
  @model IEnumerable<Order>
 @{
     if (Model.Count() == 0)

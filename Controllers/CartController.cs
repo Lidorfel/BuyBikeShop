@@ -80,17 +80,16 @@ public class CartController : Controller
     [HttpPost]
     public IActionResult RemoveFromCart(int productId)
     {
-        // Load the main cart (session or user cart) and the cookie cart
+        
         var mainCart = CartManager.GetCart(HttpContext);
         var cookieCart = CartManager.LoadCartFromCookie(HttpContext, userManager);
 
-        // Merge the cookie cart into the main cart
         CartManager.MergeCarts(mainCart, cookieCart);
 
-        // Perform the remove action on the merged cart
+
         CartManager.RemoveFromCartP(mainCart, productId);
 
-        // Save the updated merged cart back to the session and cookie
+
         HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));
         CartManager.SaveCartInCookie(mainCart, HttpContext, userManager);
 

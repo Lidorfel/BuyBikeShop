@@ -8,12 +8,10 @@ namespace BuyBikeShop.Models
     {
         public int OrderProductId { get; set; }
 
-        // Foreign key for Order
         [ForeignKey("Order")]
         public int OrderId { get; set; }
         public Order Order { get; set; }
 
-        // Foreign key for Product
         [ForeignKey("Product")]
         public int ProductId { get; set; }
         public Product Product { get; set; }

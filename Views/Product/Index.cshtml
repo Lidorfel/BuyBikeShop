@@ -89,8 +89,7 @@
             <div style="margin-top:20px">
                
                 <form asp-controller="CheckOut" asp-action="Payment"  method="post">
-                    @* <input type="hidden" name="productId" value="@firstProduct.Id"/>*@ @* send int amount if id *@
-                    @* <input type="hidden" name="quantity" value="quantity" /> *@ @* /send int amount if quantity *@
+
                     <input type="hidden" name="productId" value="@firstProduct.Id" />
                     <div class="input-group mb-3 mt-3" style="width: 130px;">
                         <button class="btn btn-outline-secondary" type="button" id="button-minus" onclick="changeQuantity(-1)">-</button>
@@ -153,22 +152,22 @@
                 productsList.RemoveAt(0);
 
                 IEnumerable<Product> test = productsList.AsEnumerable();
-                int itemsPerSlide = 3; // Number of items to show per slide
+                int itemsPerSlide = 3; 
 
-                // Calculate the total number of slides
+         
                 int totalSlides = (int)Math.Ceiling((double)totalItems / itemsPerSlide);
             }
 
             @for (int slideIndex = 0; slideIndex < totalSlides; slideIndex++)
             {
-                // Calculate the index of the first item in this slide
+                
                 int startIndex = slideIndex * itemsPerSlide % totalItems;
 
                 <div class="carousel-item @(slideIndex == 0 ? "active" : "")">
                     <div class="row" style="margin-left:120px">
                         @for (int itemOffset = 0; itemOffset < itemsPerSlide; itemOffset++)
                         {
-                            // Calculate the index of the current item, considering wrap-around
+                          
                             int currentIndex = (startIndex + itemOffset) % totalItems;
                             var product = productsList[currentIndex];
 
@@ -215,7 +214,7 @@
         var currentQuantity = parseInt(quantityInput.value, 10);
         var newQuantity = currentQuantity + change;
 
-        // Ensure new quantity is not less than 1
+   
         newQuantity = Math.max(1, newQuantity);
         newQuantity = Math.min(newQuantity, @firstProduct.Quantity);
 
@@ -228,40 +227,5 @@
     });
 </script>
 
-
-@* document.getElementById('button-minus').addEventListener('click', function () {
-        updateQuantity(-1);
-    });
-
-    document.getElementById('button-plus').addEventListener('click', function () {
-        updateQuantity(1);
-    });
-
-    function updateQuantity(change) {
-        var quantityInput = document.getElementById('quantityInput');
-        var currentQuantity = parseInt(quantityInput.value, 10);
-        var newQuantity = currentQuantity + change;
-
-        if (newQuantity >= 1 && newQuantity <= @firstProduct.Quantity) {
-            quantityInput.value = newQuantity;
-            //update asp-route-quantity
-            document.getElementById('buyNowButton').setAttribute('asp-route-quantity', newQuantity.toString());
-        }
-    } *@
-
-@* document.addEventListener("DOMContentLoaded", function () {
-        var buyNowButton = document.getElementById('buyNowButton');
-        buyNowButton.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            var quantity = document.getElementById('quantityInput').value;
-            //limit quantity to max
-            quantity = Math.max(1, Math.min(quantity, @firstProduct.Quantity));
-
-            //change the url so we can use the routes
-            var url = `@Url.Action("Payment", "CheckOut")?quantity=${quantity}&productId=${@firstProduct.Id}`
-            window.location.href = url;
-        });
-    }); *@
 
 

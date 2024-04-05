@@ -48,7 +48,6 @@ namespace BuyBikeShop.Controllers
 
             }
 
-            // Apply sorting based on the selected option
             switch (sortOption)
             {
                 case "lowToHigh":
@@ -64,11 +63,10 @@ namespace BuyBikeShop.Controllers
                     products = products.OrderBy(p => p.ReleaseDate);
                     break;
                 default:
-                    // Handle default case, if needed
+           
                     break;
             }
 
-            // Return the partial view with the filtered and sorted products
             return PartialView("_ProductsPartialView", products.ToList());
         }
     }

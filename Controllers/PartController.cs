@@ -45,11 +45,11 @@ namespace BuyBikeShop.Controllers
             }
             else
             {
-                // If no categories are selected, apply the default filter for bikes
+                
                 products = products.Where(p => p.Class_Name == "Parts");
             }
 
-            // Apply sorting based on the selected option
+           
             switch (sortOption)
             {
                 case "lowToHigh":
@@ -65,11 +65,11 @@ namespace BuyBikeShop.Controllers
                     products = products.OrderBy(p => p.ReleaseDate);
                     break;
                 default:
-                    // Handle default case, if needed
+          
                     break;
             }
 
-            // Return the partial view with the filtered and sorted products
+
             return PartialView("_ProductsPartialView", products.ToList());
         }
     }

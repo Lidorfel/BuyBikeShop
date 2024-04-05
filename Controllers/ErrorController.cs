@@ -12,7 +12,7 @@ namespace BuyBikeShop.Controllers
 				case 404:
 					ViewBag.ErrorMessage = "Sorry, the resource you requested could not be found";
 					break;
-					// Handle other status codes if needed
+					
 			}
 
 			return View("404");
