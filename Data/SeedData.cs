@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 
-namespace YourProjectNamespace
+namespace BuyBikeShop
 {
     public static class SeedData
     {
@@ -13,10 +13,10 @@ namespace YourProjectNamespace
         {
             using (var context = new BuyBikeShopContext(serviceProvider.GetRequiredService<DbContextOptions<BuyBikeShopContext>>()))
             {
-                // Ensure that the database is created and migrated to the latest schema version
+                //checks if there are all the tables in the database in the latest version, if no it updates the database
                 context.Database.Migrate();
 
-                // Check if Products table exists and is empty
+                
                 if (!context.Products.Any())
                 {
                     // Seed Products table

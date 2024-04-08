@@ -4,6 +4,7 @@ using BuyBikeShop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuyBikeShop.Migrations
 {
     [DbContext(typeof(BuyBikeShopContext))]
-    partial class BuyBikeShopContextModelSnapshot : ModelSnapshot
+    [Migration("20240408091103_changing_order_model")]
+    partial class changing_order_model
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

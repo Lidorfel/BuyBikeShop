@@ -3,7 +3,7 @@ using BuyBikeShop.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using YourProjectNamespace;
+using BuyBikeShop;
 
 var builder = WebApplication.CreateBuilder(args);
 
