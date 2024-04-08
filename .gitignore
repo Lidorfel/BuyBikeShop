@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # AES Keys
-/secure
+# /secure
