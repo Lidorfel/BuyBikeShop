@@ -47,7 +47,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Bikes_MTB_CrossCPro_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-10-15"),
                             Age_Limit = 16,
                             Rating = 4.2
                         },
@@ -77,7 +77,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Bikes_MTB_DownHill_Clay.png",
                             Color = "Clay",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-07-28"),
                             Age_Limit = 16,
                             Rating = 4.2
                         },
@@ -107,7 +107,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Bikes_MTB_TrailRoot_Creme.png",
                             Color = "Creme",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-11-15"),
                             Age_Limit = 16,
                             Rating = 4.1
                         },
@@ -137,7 +137,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Bikes_Road_RaceXLite_Grey.png",
                             Color = "Grey",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-08-27"),
                             Age_Limit = 16,
                             Rating = 4.1
                         },
@@ -152,7 +152,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Bikes_Road_RaceXLite_Yellow.png",
                             Color = "Yellow",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-09-27"),
                             Age_Limit = 16,
                             Rating = 4.2
                         },
@@ -167,7 +167,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 25,
                             Photo = "/assets/Bikes_Road_Reveal_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-01-20"),
                             Age_Limit = 16,
                             Rating = 5
                         },
@@ -182,7 +182,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Bikes_Road_Reveal_Orange.png",
                             Color = "Orange",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-08-22"),
                             Age_Limit = 16,
                             Rating = 3.9
                         },
@@ -197,7 +197,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Bikes_Road_Reveal_White.png",
                             Color = "White",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-03-22"),
                             Age_Limit = 16,
                             Rating = 4.6
                         },
@@ -212,7 +212,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Bikes_Urban_Sneak_Mint.png",
                             Color = "Mint",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-01-22"),
                             Age_Limit = 16,
                             Rating = 4.6
                         },
@@ -242,7 +242,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 25,
                             Photo = "/assets/Bikes_Urban_Lava_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-12-12"),
                             Age_Limit = 16,
                             Rating = 4.8
                         },
@@ -257,7 +257,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Bikes_Urban_Lava_Turquoise.png",
                             Color = "Turquoise",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-04-01"),
                             Age_Limit = 16,
                             Rating = 4.5
                         },
@@ -272,7 +272,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Helmet_Abus_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-02-22"),
                             Age_Limit = 16,
                             Rating = 4.2
                         },
@@ -302,7 +302,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Helmet_Alpina_DarkGrey.png",
                             Color = "DarkGrey",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-11-30"),
                             Age_Limit = 16,
                             Rating = 3.7
                         },
@@ -332,7 +332,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Accessories_Helmet_Quatro_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-02-24"),
                             Age_Limit = 16,
                             Rating = 4.4
                         },
@@ -347,7 +347,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Helmet_Quatro_White.png",
                             Color = "White",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-05-21"),
                             Age_Limit = 16,
                             Rating = 4.1
                         },
@@ -362,7 +362,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 25,
                             Photo = "/assets/Accessories_Helmet_Uvex_Blue.png",
                             Color = "Blue",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-04-24"),
                             Age_Limit = 16,
                             Rating = 4
                         },
@@ -392,7 +392,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Bottle_Superloli_White.png",
                             Color = "White",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-05-23"),
                             Age_Limit = 16,
                             Rating = 4.5
                         },
@@ -407,7 +407,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Accessories_Bottle_Superloli_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-05-24"),
                             Age_Limit = 16,
                             Rating = 3.7
                         },
@@ -422,7 +422,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Bottle_Rose_White.png",
                             Color = "White",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-08-27"),
                             Age_Limit = 16,
                             Rating = 4.1
                         },
@@ -452,7 +452,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Bottle_Fly20_Yellow.png",
                             Color = "Yellow",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-01-01"),
                             Age_Limit = 16,
                             Rating = 3.7
                         },
@@ -467,7 +467,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Bottle_Fly20_Blue.png",
                             Color = "Blue",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-02-01"),
                             Age_Limit = 16,
                             Rating = 3.9
                         },
@@ -482,7 +482,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Accessories_Bags_deuter_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-02-25"),
                             Age_Limit = 16,
                             Rating = 4.4
                         },
@@ -497,7 +497,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Bags_deuter_Orange.png",
                             Color = "Orange",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-01-11"),
                             Age_Limit = 16,
                             Rating = 4.1
                         },
@@ -527,7 +527,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Bags_Vaude_Beige.png",
                             Color = "Beige",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-03-27"),
                             Age_Limit = 16,
                             Rating = 3.8
                         },
@@ -542,7 +542,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Accessories_Bags_Vaude_Black.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-01-27"),
                             Age_Limit = 16,
                             Rating = 4.6
                         },
@@ -557,7 +557,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Accessories_Bags_Vaude_LightGreen.png",
                             Color = "LightGreen",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-09-22"),
                             Age_Limit = 16,
                             Rating = 4.3
                         },
@@ -587,7 +587,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 25,
                             Photo = "/assets/Parts_Light_Sigma_AURA45.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-08-27"),
                             Age_Limit = 16,
                             Rating = 4
                         },
@@ -602,7 +602,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Parts_Light_Sigma_AURA60.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-03-31"),
                             Age_Limit = 16,
                             Rating = 4.1
                         },
@@ -617,7 +617,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Parts_Light_Sigma_AURA80.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-08-02"),
                             Age_Limit = 16,
                             Rating = 4.5
                         },
@@ -647,7 +647,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 20,
                             Photo = "/assets/Parts_Pedal_Rose_Grip259.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-03-11"),
                             Age_Limit = 16,
                             Rating = 4
                         },
@@ -662,7 +662,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Parts_Pedal_Rose_Pro79.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2024-01-17"),
                             Age_Limit = 16,
                             Rating = 4.9
                         },
@@ -692,7 +692,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 25,
                             Photo = "/assets/Parts_Saddle_Brooks_ClassicB17.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-02-02"),
                             Age_Limit = 16,
                             Rating = 5
                         },
@@ -722,7 +722,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 0,
                             Photo = "/assets/Parts_Saddle_Terry_AnatomicaFlex.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-08-27"),
                             Age_Limit = 16,
                             Rating = 4.5
                         },
@@ -737,7 +737,7 @@ namespace YourProjectNamespace
                             Sale_Perc = 25,
                             Photo = "/assets/Parts_Saddle_Terry_FisioGelMax.png",
                             Color = "Black",
-                            ReleaseDate = DateTime.Parse("2024-02-21"),
+                            ReleaseDate = DateTime.Parse("2023-05-13"),
                             Age_Limit = 16,
                             Rating = 5
                         }
