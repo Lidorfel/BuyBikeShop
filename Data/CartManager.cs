@@ -37,7 +37,7 @@ public static class CartManager
 
     
 
-    public static void UpdateCartItemQuantity(Cart cart, int productId, int newQuantity)
+    public static bool UpdateCartItemQuantity(Cart cart, int productId, int newQuantity)
     {
         var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
         if (cartItem != null)
@@ -46,18 +46,22 @@ public static class CartManager
             {
                
                 cartItem.Quantity = newQuantity;
+                return true;
             }
             else
             {
                
                 cart.CartItems.Remove(cartItem);
+                return false;
             }
         }
         else if (newQuantity > 0)
         {
 
             cart.CartItems.Add(new CartItem { ProductId = productId, Quantity = newQuantity });
+            return true;
         }
+        return true;
        
     }
 

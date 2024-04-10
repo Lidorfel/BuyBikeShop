@@ -29,7 +29,15 @@ background-color: #eae8e8;
 
 
 }</style>
-
+@if (TempData["CartUpdateError"] != null)
+{
+    <div class="alert alert-danger" role="alert" id="cartUpdateErrorModal">
+        @TempData["CartUpdateError"]
+        <a type="button" class="btn btn-outline-danger ml-4" asp-action="Cart" asp-controller="CheckOut">
+            Ok
+        </a>
+    </div>
+}
 <section class="h-100 h-custom" style="background-color: white;">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -141,6 +149,3 @@ background-color: #eae8e8;
         </div>
     </div>
 </section>
-
-
-

@@ -67,7 +67,12 @@ public class CartController : Controller
             newQuantity = Math.Max(newQuantity, 1); 
             newQuantity = Math.Min(newQuantity, specificProduct.Quantity); 
 
-            CartManager.UpdateCartItemQuantity(mainCart, productId, newQuantity);
+            bool res = CartManager.UpdateCartItemQuantity(mainCart, productId, newQuantity);
+
+            if (!res)
+            {
+                TempData["CartUpdateError"] = "Failed to update cart item quantity for product # " + productId + ", Check for new stock.";
+            }
         }
 
         HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(mainCart));
